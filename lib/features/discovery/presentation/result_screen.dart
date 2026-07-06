@@ -15,6 +15,7 @@ import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
 import '../application/decision_session.dart';
+import 'widgets/choice_confidence_sheet.dart';
 import 'widgets/decision_progress_funnel.dart';
 
 String _buildMapUrl(Restaurant r) {
@@ -50,6 +51,22 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     DecisionSessionService.instance.end();
     _loadWinCount();
     WidgetsBinding.instance.addPostFrameCallback((_) => _logSelection());
+    Future.delayed(const Duration(milliseconds: 900), _showConfidenceSheet);
+  }
+
+  void _showConfidenceSheet() {
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
+      builder: (context) => ChoiceConfidenceSheet(
+        onSelected: (level) => AnalyticsService.instance.logChoiceConfidence(
+          widget.winner.id,
+          level,
+          userId: ref.read(userProvider).user?.userId,
+        ),
+      ),
+    );
   }
 
   @override

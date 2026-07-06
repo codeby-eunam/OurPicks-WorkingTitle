@@ -68,6 +68,11 @@ class AnalyticsService {
     }, userId: userId);
   }
 
+  /// level: 'unsure' | 'okay' | 'confident' | 'very_confident'
+  void logChoiceConfidence(String storeId, String level, {String? userId}) {
+    _logEvent('choice_confidence', {'storeId': storeId, 'level': level}, userId: userId);
+  }
+
   void logTournamentWinner(
     String storeId,
     String storeName,
