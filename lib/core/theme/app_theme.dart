@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
+import 'app_radius.dart';
 
 class AppTheme {
   AppTheme._();
@@ -20,6 +21,7 @@ class AppTheme {
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
+        scrolledUnderElevation: 0,
         centerTitle: false,
       ),
       textTheme: const TextTheme(
@@ -29,9 +31,33 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: AppColors.border, width: 1.5),
+          shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
+        ),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: AppColors.surface,
+        shape: RoundedRectangleBorder(
+          borderRadius: AppRadius.lgAll,
+          side: const BorderSide(color: AppColors.border),
+        ),
+      ),
+      dialogTheme: DialogThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: AppRadius.lgAll),
+      ),
+      bottomSheetTheme: const BottomSheetThemeData(
+        elevation: 0,
+        shape: AppRadius.sheetShape,
       ),
     );
   }
