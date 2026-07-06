@@ -275,8 +275,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: selected ? AppColors.primary : Colors.transparent, width: 3),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: selected ? 0.25 : 0.09), blurRadius: selected ? 16 : 12, offset: const Offset(0, 3))],
+          border: Border.all(color: selected ? AppColors.primary : AppColors.border, width: selected ? 3 : 1),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

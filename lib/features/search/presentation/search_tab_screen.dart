@@ -185,7 +185,7 @@ class _PublicListCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 8, offset: const Offset(0, 2))],
+          border: Border.all(color: AppColors.border),
         ),
         clipBehavior: Clip.antiAlias,
         child: Column(

@@ -21,7 +21,7 @@ class FloatingContactButton extends ConsumerWidget {
         child: Material(
           color: AppColors.primary,
           borderRadius: BorderRadius.circular(50),
-          elevation: 4,
+          elevation: 0,
           child: InkWell(
             borderRadius: BorderRadius.circular(50),
             onTap: () => _showFeedbackSheet(context, ref),

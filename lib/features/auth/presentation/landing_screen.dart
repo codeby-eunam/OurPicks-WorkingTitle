@@ -100,9 +100,6 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF006D77),
             borderRadius: BorderRadius.circular(compact ? 18 : 26),
-            boxShadow: [
-              BoxShadow(color: const Color(0xFF006D77).withValues(alpha: 0.38), blurRadius: 14, offset: const Offset(0, 5)),
-            ],
           ),
           child: Center(
             child: Text('🐻', style: TextStyle(fontSize: compact ? 32 : 44)),
@@ -147,7 +144,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(compact ? 10 : 14),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
             child: Row(
               children: [
@@ -271,7 +268,7 @@ class _SocialButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(14),
             side: border != null ? BorderSide(color: border!, width: 1.5) : BorderSide.none,
           ),
-          elevation: 2,
+          elevation: 0,
         ),
         child: isLoading
             ? SizedBox(

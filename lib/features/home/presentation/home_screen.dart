@@ -249,7 +249,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(50),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 8, offset: const Offset(0, 2))],
+        border: Border.all(color: AppColors.border),
       ),
       child: Row(
         children: [
@@ -455,8 +455,8 @@ class _FilterChip extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: active ? AppColors.primary : Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 5, offset: const Offset(0, 1))],
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: active ? AppColors.primary : AppColors.border),
         ),
         alignment: Alignment.center,
         child: Column(

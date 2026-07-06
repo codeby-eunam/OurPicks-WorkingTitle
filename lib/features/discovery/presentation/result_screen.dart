@@ -132,7 +132,6 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.gold,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: AppColors.gold.withValues(alpha: 0.5), blurRadius: 12, offset: const Offset(0, 4))],
                     ),
                     child: const Text('👑', style: TextStyle(fontSize: 26)),
                   ),
@@ -142,8 +141,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       constraints: const BoxConstraints(maxWidth: 360),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 24, offset: const Offset(0, 8))],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: Column(

@@ -306,7 +306,7 @@ class _PlaceCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.07), blurRadius: 8, offset: const Offset(0, 2))],
+        border: Border.all(color: AppColors.border),
       ),
       clipBehavior: Clip.antiAlias,
       child: GestureDetector(
@@ -489,7 +489,7 @@ class _BottomTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(color: Colors.white, boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, -2))]),
+      decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: AppColors.border))),
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: SafeArea(
         top: false,
