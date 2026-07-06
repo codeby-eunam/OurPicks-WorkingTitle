@@ -73,13 +73,16 @@ class LibraryDetailScreen extends ConsumerWidget {
                       const Spacer(),
                       OutlinedButton.icon(
                         onPressed: () => _handleShare(list),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
                         icon: const Icon(Icons.ios_share, size: 14),
                         label: const Text(
                           '공유하기',
                           style: TextStyle(fontSize: 13),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       ElevatedButton.icon(
                         onPressed: () {
                           DecisionSessionService.instance.begin();
@@ -95,6 +98,7 @@ class LibraryDetailScreen extends ConsumerWidget {
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.secondary,
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
                         ),
                         icon: const Icon(
                           Icons.swipe,
@@ -106,7 +110,7 @@ class LibraryDetailScreen extends ConsumerWidget {
                           style: TextStyle(fontSize: 13, color: Colors.white),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 4),
                       ElevatedButton.icon(
                         onPressed: () {
                           DecisionSessionService.instance.begin();
@@ -119,6 +123,9 @@ class LibraryDetailScreen extends ConsumerWidget {
                             },
                           );
                         },
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 6),
+                        ),
                         icon: const Text('🏆', style: TextStyle(fontSize: 13)),
                         label: const Text(
                           'Tournament',

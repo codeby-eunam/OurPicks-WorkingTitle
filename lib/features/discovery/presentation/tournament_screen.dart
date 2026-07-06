@@ -300,27 +300,29 @@ class _TournamentScreenState extends State<TournamentScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (left != null) Expanded(child: _matchCard(left, 'left')),
-                  const SizedBox(
-                    width: 36,
-                    child: Center(
-                      child: Text(
-                        'VS',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w900,
-                          color: Color(0xFFD1D5DB),
-                          letterSpacing: 2,
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (left != null) Expanded(child: _matchCard(left, 'left')),
+                    const SizedBox(
+                      width: 36,
+                      child: Center(
+                        child: Text(
+                          'VS',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFFD1D5DB),
+                            letterSpacing: 2,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                  if (right != null)
-                    Expanded(child: _matchCard(right, 'right')),
-                ],
+                    if (right != null)
+                      Expanded(child: _matchCard(right, 'right')),
+                  ],
+                ),
               ),
             ),
             Container(
