@@ -9,6 +9,7 @@ import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/services/restaurant_badge.dart';
 import '../../../shared/widgets/kakao_webview.dart';
+import '../application/decision_resume.dart';
 import '../application/decision_session.dart';
 import 'widgets/decision_timer_chip.dart';
 
@@ -28,9 +29,10 @@ List<Restaurant?> _makeBracket(List<Restaurant> list) {
 
 /// Port of app/tournament.tsx: single-elimination bracket with bye auto-advance.
 class TournamentScreen extends StatefulWidget {
-  const TournamentScreen({super.key, required this.restaurants});
+  const TournamentScreen({super.key, required this.restaurants, this.locationName = ''});
 
   final List<Restaurant> restaurants;
+  final String locationName;
 
   @override
   State<TournamentScreen> createState() => _TournamentScreenState();
@@ -49,6 +51,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
   void initState() {
     super.initState();
     _loadWinCounts();
+    DecisionResumeService.instance.saveTournamentSession(contenders: widget.restaurants, locationName: widget.locationName);
   }
 
   Future<void> _loadWinCounts() async {
@@ -112,10 +115,12 @@ class _TournamentScreenState extends State<TournamentScreen> {
       if (next.length == 1) {
         RestaurantStatsService.instance.recordWin(next[0].id);
         DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+        DecisionResumeService.instance.clear();
         context.pushReplacement('/result', extra: {'restaurant': next[0]});
         return;
       }
       DecisionSessionService.instance.recordStage(_getRoundName(total: next.length), next.length);
+      DecisionResumeService.instance.saveTournamentSession(contenders: next, locationName: widget.locationName);
       setState(() {
         _bracket = _makeBracket(next);
         _matchIdx = 0;
@@ -156,6 +161,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
     final r = _activeRestaurant;
     if (r != null) {
       DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+      DecisionResumeService.instance.clear();
       context.push('/result', extra: {'restaurant': r});
     }
   }

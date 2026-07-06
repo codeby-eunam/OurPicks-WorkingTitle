@@ -93,6 +93,7 @@ final appRouter = GoRouter(
         return SwipeScreen(
           restaurants: (extra['restaurants'] as List).cast<Restaurant>(),
           locationName: extra['locationName']?.toString() ?? '',
+          initialLiked: (extra['liked'] as List?)?.cast<Restaurant>() ?? const [],
         );
       },
     ),
@@ -100,7 +101,10 @@ final appRouter = GoRouter(
       path: '/tournament',
       builder: (context, state) {
         final extra = (state.extra as Map?) ?? const {};
-        return TournamentScreen(restaurants: (extra['restaurants'] as List).cast<Restaurant>());
+        return TournamentScreen(
+          restaurants: (extra['restaurants'] as List).cast<Restaurant>(),
+          locationName: extra['locationName']?.toString() ?? '',
+        );
       },
     ),
     GoRoute(

@@ -13,6 +13,8 @@ import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_api.dart';
 import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
+import '../../discovery/application/decision_resume.dart';
+import '../../discovery/application/decision_session.dart';
 
 const _kFoodFilters = [
   (id: 'all', label: '전체', emoji: '🍽️'),
@@ -45,13 +47,44 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   bool _searching = false;
   List<String> _recentSearches = [];
   Timer? _debounce;
+  ResumableSession? _resumeSession;
 
   @override
   void initState() {
     super.initState();
     _maybeRedirectToLanding();
     _loadRecentSearches();
+    _loadResumeSession();
     _searchController.addListener(_onSearchTextChanged);
+  }
+
+  Future<void> _loadResumeSession() async {
+    final session = await DecisionResumeService.instance.load();
+    if (mounted) setState(() => _resumeSession = session);
+  }
+
+  void _dismissResumeSession() {
+    DecisionResumeService.instance.clear();
+    setState(() => _resumeSession = null);
+  }
+
+  void _resume() {
+    final session = _resumeSession;
+    if (session == null) return;
+    DecisionResumeService.instance.clear();
+    DecisionSessionService.instance.begin();
+    setState(() => _resumeSession = null);
+    if (session.mode == ResumeMode.swipe) {
+      context.push(
+        '/swipe',
+        extra: {'restaurants': session.restaurants, 'locationName': session.locationName, 'liked': session.liked},
+      );
+    } else {
+      context.push(
+        '/tournament',
+        extra: {'restaurants': session.restaurants, 'locationName': session.locationName},
+      );
+    }
   }
 
   Future<void> _maybeRedirectToLanding() async {
@@ -224,6 +257,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.only(bottom: 32),
               child: Column(
                 children: [
+                  if (_resumeSession != null) _buildResumeBanner(_resumeSession!),
                   _buildSearchBar(),
                   _buildFilterGrid(),
                   _buildStartButton(),
@@ -239,6 +273,45 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
       bottomSheet: _searchVisible ? _buildSearchModal() : null,
+    );
+  }
+
+  Widget _buildResumeBanner(ResumableSession session) {
+    final modeLabel = session.mode == ResumeMode.swipe ? '스와이프' : '토너먼트';
+    final locationLabel = session.locationName.isNotEmpty ? '${session.locationName} · ' : '';
+    return Container(
+      margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        children: [
+          const Text('⏳', style: TextStyle(fontSize: 22)),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('고르던 중이었어요', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey.shade800)),
+                Text(
+                  '$locationLabel$modeLabel · 후보 ${session.restaurants.length}곳',
+                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                ),
+              ],
+            ),
+          ),
+          TextButton(onPressed: _resume, child: const Text('이어하기')),
+          IconButton(
+            onPressed: _dismissResumeSession,
+            icon: const Icon(Icons.close, size: 18, color: Color(0xFF9CA3AF)),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+          ),
+        ],
+      ),
     );
   }
 

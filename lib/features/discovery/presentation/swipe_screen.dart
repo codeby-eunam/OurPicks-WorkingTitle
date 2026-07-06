@@ -11,6 +11,7 @@ import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/widgets/kakao_webview.dart';
 import '../../library/application/library_notifier.dart';
+import '../application/decision_resume.dart';
 import '../application/decision_session.dart';
 import 'widgets/decision_timer_chip.dart';
 
@@ -35,10 +36,13 @@ Place _toPlace(Restaurant r) {
 
 /// Port of app/swipe.tsx.
 class SwipeScreen extends ConsumerStatefulWidget {
-  const SwipeScreen({super.key, required this.restaurants, required this.locationName});
+  const SwipeScreen({super.key, required this.restaurants, required this.locationName, this.initialLiked = const []});
 
   final List<Restaurant> restaurants;
   final String locationName;
+
+  /// 이전 세션에서 이어하기로 들어온 경우 이미 좋아요한 항목들.
+  final List<Restaurant> initialLiked;
 
   @override
   ConsumerState<SwipeScreen> createState() => _SwipeScreenState();
@@ -60,9 +64,19 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> with TickerProviderSt
   void initState() {
     super.initState();
     _restaurants = [...widget.restaurants]..shuffle(Random());
+    _liked.addAll(widget.initialLiked);
     _exitController = AnimationController(vsync: this, duration: const Duration(milliseconds: 260));
     _fadeInController = AnimationController(vsync: this, duration: const Duration(milliseconds: 220), value: 1);
     _loadChoiceCount();
+    _saveResumeSession();
+  }
+
+  void _saveResumeSession() {
+    DecisionResumeService.instance.saveSwipeSession(
+      remaining: _restaurants.sublist(_index),
+      liked: _liked,
+      locationName: widget.locationName,
+    );
   }
 
   @override
@@ -99,11 +113,13 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> with TickerProviderSt
 
     if (_index + 1 >= _restaurants.length) {
       DecisionSessionService.instance.recordStage('1차 선택', _liked.length);
+      DecisionResumeService.instance.clear();
       setState(() => _done = true);
     } else {
       setState(() => _index += 1);
       _viewStart = DateTime.now();
       _loadChoiceCount();
+      _saveResumeSession();
     }
   }
 
@@ -123,8 +139,10 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> with TickerProviderSt
         r.id, r.placeName, categoryLabelFor(r.categoryName), 'swipe', widget.locationName,
       );
       DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+      DecisionResumeService.instance.clear();
       context.push('/result', extra: {'restaurant': r});
     } else if (likedList.length >= 2) {
+      DecisionResumeService.instance.clear();
       context.push('/tournament', extra: {'restaurants': likedList, 'locationName': widget.locationName});
     }
   }
