@@ -17,6 +17,7 @@ import '../../features/map/presentation/map_screen.dart';
 import '../../features/my_selections/presentation/my_selections_screen.dart';
 import '../../features/profile/presentation/profile_tab_screen.dart';
 import '../../features/search/presentation/search_tab_screen.dart';
+import '../../features/settings/presentation/language_picker_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../shared/models/restaurant.dart';
 import 'app_shell.dart';
@@ -165,6 +166,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/settings',
       builder: (context, state) => const SettingsScreen(),
+    ),
+    GoRoute(
+      path: '/language-picker',
+      builder: (context, state) {
+        final isInitialPick = state.uri.queryParameters['initial'] != 'false';
+        return LanguagePickerScreen(isInitialPick: isInitialPick);
+      },
     ),
   ],
 );

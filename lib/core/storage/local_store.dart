@@ -9,6 +9,7 @@ class LocalStore {
   static const keyUser = 'dangmatch_user';
   static const keyLastProvider = 'dangmatch_last_provider';
   static const keyHasSeenLanding = 'dangmatch_has_seen_landing';
+  static const keyLocale = 'dangmatch_locale';
   static const keyRecentLocationSearches = 'recentLocationSearches';
 
   SharedPreferences? _prefs;

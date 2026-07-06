@@ -14,6 +14,7 @@ import '../../../shared/services/restaurant_api.dart';
 import '../../auth/application/user_notifier.dart';
 import '../../discovery/application/decision_resume.dart';
 import '../../discovery/application/decision_session.dart';
+import '../../settings/application/locale_notifier.dart';
 
 const _kFoodFilters = [
   (id: 'all', label: '전체', emoji: '🍽️'),
@@ -51,7 +52,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _maybeRedirectToLanding();
+    _maybeShowLanguagePicker();
     _loadRecentSearches();
     _loadResumeSession();
     _searchController.addListener(_onSearchTextChanged);
@@ -91,6 +92,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         },
       );
     }
+  }
+
+  Future<void> _maybeShowLanguagePicker() async {
+    await ref.read(localeProvider.notifier).ready;
+    if (!mounted) return;
+    if (!ref.read(localeProvider).hasChosen) {
+      context.go('/language-picker');
+      return;
+    }
+    _maybeRedirectToLanding();
   }
 
   Future<void> _maybeRedirectToLanding() async {

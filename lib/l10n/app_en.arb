@@ -1,0 +1,48 @@
+{
+  "@@locale": "en",
+
+  "chooseLanguageTitle": "Choose your language",
+  "@chooseLanguageTitle": {},
+
+  "chooseLanguageSubtitle": "You can change this later in Settings",
+  "@chooseLanguageSubtitle": {},
+
+  "languageKorean": "한국어",
+  "@languageKorean": {},
+
+  "languageEnglish": "English",
+  "@languageEnglish": {},
+
+  "continueButton": "Continue",
+  "@continueButton": {},
+
+  "settingsTitle": "Settings",
+  "@settingsTitle": {},
+
+  "settingsProfileSection": "Profile",
+  "@settingsProfileSection": {},
+
+  "settingsAppSection": "App Settings",
+  "@settingsAppSection": {},
+
+  "settingsInfoSection": "Info",
+  "@settingsInfoSection": {},
+
+  "settingsThemeLabel": "Theme",
+  "@settingsThemeLabel": {},
+
+  "settingsThemeValue": "Light (Coming soon)",
+  "@settingsThemeValue": {},
+
+  "settingsClearCacheLabel": "Clear Cache",
+  "@settingsClearCacheLabel": {},
+
+  "settingsClearCacheValue": "Coming soon",
+  "@settingsClearCacheValue": {},
+
+  "settingsLanguageLabel": "Language",
+  "@settingsLanguageLabel": {},
+
+  "settingsAppVersionLabel": "App Version",
+  "@settingsAppVersionLabel": {}
+}
