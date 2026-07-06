@@ -98,6 +98,11 @@ class LibraryDetailScreen extends ConsumerWidget {
                                     isOwner ? '나의 찜 리스트' : '${list.ownerUserId ?? '누군가'}의 찜 리스트',
                                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.secondary),
                                   ),
+                                  const SizedBox(width: 8),
+                                  if (isOwner)
+                                    _VisibilityToggle(isPublic: list.isPublic, onTap: () => ref.read(libraryProvider.notifier).togglePublic(list.id))
+                                  else
+                                    _VisibilityBadge(isPublic: list.isPublic),
                                 ],
                               ),
                               const SizedBox(height: 8),
@@ -296,6 +301,58 @@ class LibraryDetailScreen extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       builder: (context) => _LibrarySearchSheet(list: list),
+    );
+  }
+}
+
+class _VisibilityToggle extends StatelessWidget {
+  const _VisibilityToggle({required this.isPublic, required this.onTap});
+
+  final bool isPublic;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Row(
+        children: [
+          Container(
+            width: 32,
+            height: 18,
+            padding: const EdgeInsets.all(2),
+            alignment: isPublic ? Alignment.centerRight : Alignment.centerLeft,
+            decoration: BoxDecoration(
+              color: isPublic ? AppColors.secondary : const Color(0xFFE5E7EB),
+              borderRadius: BorderRadius.circular(9),
+            ),
+            child: Container(width: 14, height: 14, decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
+          ),
+          const SizedBox(width: 5),
+          Text(
+            isPublic ? '공개' : '비공개',
+            style: TextStyle(fontSize: 12, fontWeight: isPublic ? FontWeight.w700 : FontWeight.w500, color: isPublic ? AppColors.secondary : AppColors.textSecondary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _VisibilityBadge extends StatelessWidget {
+  const _VisibilityBadge({required this.isPublic});
+
+  final bool isPublic;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(color: AppColors.surfaceMuted, borderRadius: BorderRadius.circular(8)),
+      child: Text(
+        isPublic ? '공개' : '비공개',
+        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppColors.textSecondary),
+      ),
     );
   }
 }
