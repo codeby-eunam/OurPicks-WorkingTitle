@@ -28,12 +28,24 @@ class SettingsScreen extends ConsumerWidget {
                   leading: Container(
                     width: 44,
                     height: 44,
-                    decoration: BoxDecoration(color: const Color(0xFFFFF0EB), shape: BoxShape.circle, border: Border.all(color: AppColors.primary, width: 2)),
-                    child: const Center(child: Text('🐻', style: TextStyle(fontSize: 20))),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFF0EB),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.primary, width: 2),
+                    ),
+                    child: const Center(
+                      child: Text('🐻', style: TextStyle(fontSize: 20)),
+                    ),
                   ),
-                  title: Text(user.nickname, style: const TextStyle(fontWeight: FontWeight.w600)),
+                  title: Text(
+                    user.nickname,
+                    style: const TextStyle(fontWeight: FontWeight.w600),
+                  ),
                   subtitle: Text(user.userId),
-                  trailing: const Icon(Icons.chevron_right, color: Color(0xFFD1D5DB)),
+                  trailing: const Icon(
+                    Icons.chevron_right,
+                    color: Color(0xFFD1D5DB),
+                  ),
                   onTap: () => context.push('/edit-profile'),
                 ),
               ],
@@ -49,15 +61,16 @@ class SettingsScreen extends ConsumerWidget {
                 onTap: null,
               ),
               const Divider(height: 1, indent: 54),
-              _SettingsTile(icon: Icons.delete_sweep_outlined, label: '캐시 삭제', trailingText: '준비 중', onTap: null),
+              _SettingsTile(
+                icon: Icons.delete_sweep_outlined,
+                label: '캐시 삭제',
+                trailingText: '준비 중',
+                onTap: null,
+              ),
             ],
           ),
           _SectionHeader('정보'),
-          _SettingsCard(
-            children: [
-              _AppVersionTile(),
-            ],
-          ),
+          _SettingsCard(children: [_AppVersionTile()]),
         ],
       ),
     );
@@ -72,7 +85,15 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-      child: Text(title.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8)),
+      child: Text(
+        title.toUpperCase(),
+        style: const TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: AppColors.textSecondary,
+          letterSpacing: 0.8,
+        ),
+      ),
     );
   }
 }
@@ -97,7 +118,12 @@ class _SettingsCard extends StatelessWidget {
 }
 
 class _SettingsTile extends StatelessWidget {
-  const _SettingsTile({required this.icon, required this.label, this.trailingText, this.onTap});
+  const _SettingsTile({
+    required this.icon,
+    required this.label,
+    this.trailingText,
+    this.onTap,
+  });
 
   final IconData icon;
   final String label;
@@ -108,10 +134,26 @@ class _SettingsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final disabled = onTap == null;
     return ListTile(
-      leading: Icon(icon, color: disabled ? const Color(0xFFD1D5DB) : const Color(0xFF374151)),
-      title: Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: disabled ? const Color(0xFFD1D5DB) : const Color(0xFF374151))),
+      leading: Icon(
+        icon,
+        color: disabled ? const Color(0xFFD1D5DB) : const Color(0xFF374151),
+      ),
+      title: Text(
+        label,
+        style: TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: disabled ? const Color(0xFFD1D5DB) : const Color(0xFF374151),
+        ),
+      ),
       trailing: trailingText != null
-          ? Text(trailingText!, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary))
+          ? Text(
+              trailingText!,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
+            )
           : const Icon(Icons.chevron_right, color: Color(0xFFD1D5DB)),
       onTap: onTap,
     );
@@ -124,11 +166,22 @@ class _AppVersionTile extends StatelessWidget {
     return FutureBuilder<PackageInfo>(
       future: PackageInfo.fromPlatform(),
       builder: (context, snapshot) {
-        final version = snapshot.data != null ? 'v${snapshot.data!.version} (${snapshot.data!.buildNumber})' : '';
+        final version = snapshot.data != null
+            ? 'v${snapshot.data!.version} (${snapshot.data!.buildNumber})'
+            : '';
         return ListTile(
           leading: const Icon(Icons.info_outline, color: Color(0xFF374151)),
-          title: const Text('앱 버전', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500)),
-          trailing: Text(version, style: const TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+          title: const Text(
+            '앱 버전',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.w500),
+          ),
+          trailing: Text(
+            version,
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+            ),
+          ),
         );
       },
     );

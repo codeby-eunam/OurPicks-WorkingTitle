@@ -42,7 +42,9 @@ class _DecisionTimerChipState extends State<DecisionTimerChip> {
   @override
   Widget build(BuildContext context) {
     final startedAt = DecisionSessionService.instance.startedAt;
-    final elapsed = startedAt == null ? Duration.zero : DateTime.now().difference(startedAt);
+    final elapsed = startedAt == null
+        ? Duration.zero
+        : DateTime.now().difference(startedAt);
     final minutes = elapsed.inMinutes;
     final seconds = elapsed.inSeconds % 60;
     final label = '$minutes:${seconds.toString().padLeft(2, '0')}';
@@ -59,7 +61,9 @@ class _DecisionTimerChipState extends State<DecisionTimerChip> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: widget.light ? Colors.white.withValues(alpha: 0.18) : AppColors.surfaceMuted,
+        color: widget.light
+            ? Colors.white.withValues(alpha: 0.18)
+            : AppColors.surfaceMuted,
         borderRadius: AppRadius.pillAll,
       ),
       child: Row(

@@ -5,10 +5,10 @@ enum AuthProvider {
   google;
 
   String get idField => switch (this) {
-        AuthProvider.naver => 'naverId',
-        AuthProvider.google => 'googleId',
-        AuthProvider.kakao => 'kakaoId',
-      };
+    AuthProvider.naver => 'naverId',
+    AuthProvider.google => 'googleId',
+    AuthProvider.kakao => 'kakaoId',
+  };
 
   static AuthProvider fromName(String value) {
     return AuthProvider.values.firstWhere(
@@ -50,7 +50,8 @@ class AppUser {
       provider: AuthProvider.fromName(json['provider']?.toString() ?? 'kakao'),
       userId: json['userId']?.toString() ?? '',
       nickname: json['nickname']?.toString() ?? '',
-      createdAt: json['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
+      createdAt:
+          json['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
     );
   }
 

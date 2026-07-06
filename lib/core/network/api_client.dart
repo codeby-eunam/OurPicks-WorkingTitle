@@ -9,13 +9,13 @@ const String kApiBase = String.fromEnvironment(
 
 class ApiClient {
   ApiClient._internal()
-      : dio = Dio(
-          BaseOptions(
-            baseUrl: kApiBase,
-            connectTimeout: const Duration(seconds: 10),
-            receiveTimeout: const Duration(seconds: 15),
-          ),
-        );
+    : dio = Dio(
+        BaseOptions(
+          baseUrl: kApiBase,
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 15),
+        ),
+      );
 
   static final ApiClient instance = ApiClient._internal();
 

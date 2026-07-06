@@ -28,19 +28,37 @@ final appRouter = GoRouter(
   initialLocation: '/',
   routes: [
     StatefulShellRoute.indexedStack(
-      builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
+      builder: (context, state, navigationShell) =>
+          AppShell(navigationShell: navigationShell),
       branches: [
         StatefulShellBranch(
-          routes: [GoRoute(path: '/', builder: (context, state) => const HomeScreen())],
+          routes: [
+            GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
+          ],
         ),
         StatefulShellBranch(
-          routes: [GoRoute(path: '/search', builder: (context, state) => const SearchTabScreen())],
+          routes: [
+            GoRoute(
+              path: '/search',
+              builder: (context, state) => const SearchTabScreen(),
+            ),
+          ],
         ),
         StatefulShellBranch(
-          routes: [GoRoute(path: '/library', builder: (context, state) => const LibraryTabScreen())],
+          routes: [
+            GoRoute(
+              path: '/library',
+              builder: (context, state) => const LibraryTabScreen(),
+            ),
+          ],
         ),
         StatefulShellBranch(
-          routes: [GoRoute(path: '/profile', builder: (context, state) => const ProfileTabScreen())],
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileTabScreen(),
+            ),
+          ],
         ),
       ],
     ),
@@ -54,10 +72,14 @@ final appRouter = GoRouter(
         );
       },
     ),
-    GoRoute(path: '/landing', builder: (context, state) => const LandingScreen()),
+    GoRoute(
+      path: '/landing',
+      builder: (context, state) => const LandingScreen(),
+    ),
     GoRoute(
       path: '/auth/callback',
-      builder: (context, state) => AuthCallbackScreen(queryParams: state.uri.queryParameters),
+      builder: (context, state) =>
+          AuthCallbackScreen(queryParams: state.uri.queryParameters),
     ),
     GoRoute(
       path: '/setup-profile',
@@ -69,7 +91,10 @@ final appRouter = GoRouter(
         );
       },
     ),
-    GoRoute(path: '/edit-profile', builder: (context, state) => const EditProfileScreen()),
+    GoRoute(
+      path: '/edit-profile',
+      builder: (context, state) => const EditProfileScreen(),
+    ),
     GoRoute(
       path: '/mode-select',
       builder: (context, state) {
@@ -89,7 +114,8 @@ final appRouter = GoRouter(
         return SwipeScreen(
           restaurants: (extra['restaurants'] as List).cast<Restaurant>(),
           locationName: extra['locationName']?.toString() ?? '',
-          initialLiked: (extra['liked'] as List?)?.cast<Restaurant>() ?? const [],
+          initialLiked:
+              (extra['liked'] as List?)?.cast<Restaurant>() ?? const [],
         );
       },
     ),
@@ -129,9 +155,16 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/share/:shareToken',
-      builder: (context, state) => ShareDetailScreen(shareToken: state.pathParameters['shareToken']!),
+      builder: (context, state) =>
+          ShareDetailScreen(shareToken: state.pathParameters['shareToken']!),
     ),
-    GoRoute(path: '/my-selections', builder: (context, state) => const MySelectionsScreen()),
-    GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
+    GoRoute(
+      path: '/my-selections',
+      builder: (context, state) => const MySelectionsScreen(),
+    ),
+    GoRoute(
+      path: '/settings',
+      builder: (context, state) => const SettingsScreen(),
+    ),
   ],
 );

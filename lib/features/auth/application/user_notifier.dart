@@ -30,7 +30,9 @@ class UserNotifier extends Notifier<UserState> {
 
   Future<void> _restore() async {
     final userJson = await LocalStore.instance.getString(LocalStore.keyUser);
-    final providerName = await LocalStore.instance.getString(LocalStore.keyLastProvider);
+    final providerName = await LocalStore.instance.getString(
+      LocalStore.keyLastProvider,
+    );
 
     AppUser? user;
     if (userJson != null) {
@@ -45,7 +47,9 @@ class UserNotifier extends Notifier<UserState> {
       user: user,
       clearUser: user == null,
       hasSeenLanding: user != null ? true : state.hasSeenLanding,
-      lastUsedProvider: providerName != null ? AuthProvider.fromName(providerName) : null,
+      lastUsedProvider: providerName != null
+          ? AuthProvider.fromName(providerName)
+          : null,
       initialized: true,
     );
   }
@@ -82,9 +86,17 @@ class UserNotifier extends Notifier<UserState> {
 
     if (isNewUser || userId == null || userId.isEmpty) {
       state = state.copyWith(
-        pendingLogin: PendingLogin(kakaoId: socialId, nickname: nickname, provider: provider),
+        pendingLogin: PendingLogin(
+          kakaoId: socialId,
+          nickname: nickname,
+          provider: provider,
+        ),
       );
-      return OAuthResult(needsSetup: true, kakaoId: socialId, provider: provider);
+      return OAuthResult(
+        needsSetup: true,
+        kakaoId: socialId,
+        provider: provider,
+      );
     }
 
     final user = AppUser(
@@ -96,16 +108,20 @@ class UserNotifier extends Notifier<UserState> {
     );
     state = state.copyWith(user: user, hasSeenLanding: true);
     _persistUser(user);
-    return OAuthResult(needsSetup: false, kakaoId: socialId, provider: provider);
+    return OAuthResult(
+      needsSetup: false,
+      kakaoId: socialId,
+      provider: provider,
+    );
   }
 
   /// {API_BASE}/api/auth/{provider}?redirect_uri=dangmatch://auth/callback 를 열고
   /// flutter_web_auth_2로 콜백을 캡처한다 (RN의 expo-web-browser openAuthSessionAsync 대응).
   /// 사용자가 인증을 취소하면 null을 반환한다.
   Future<OAuthResult?> loginWith(AuthProvider provider) async {
-    final url = Uri.parse('$kApiBase/api/auth/${provider.name}').replace(
-      queryParameters: {'redirect_uri': _kRedirectUri},
-    );
+    final url = Uri.parse(
+      '$kApiBase/api/auth/${provider.name}',
+    ).replace(queryParameters: {'redirect_uri': _kRedirectUri});
 
     late final String resultUrl;
     try {
@@ -121,7 +137,10 @@ class UserNotifier extends Notifier<UserState> {
     final result = processOAuthParams(params);
 
     state = state.copyWith(lastUsedProvider: provider);
-    await LocalStore.instance.setString(LocalStore.keyLastProvider, provider.name);
+    await LocalStore.instance.setString(
+      LocalStore.keyLastProvider,
+      provider.name,
+    );
 
     return result;
   }
@@ -144,10 +163,15 @@ class UserNotifier extends Notifier<UserState> {
       provider: provider,
       userId: userId,
       nickname: nickname,
-      createdAt: data['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
+      createdAt:
+          data['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
     );
 
-    state = state.copyWith(user: user, hasSeenLanding: true, clearPendingLogin: true);
+    state = state.copyWith(
+      user: user,
+      hasSeenLanding: true,
+      clearPendingLogin: true,
+    );
     await _persistUser(user);
   }
 
@@ -155,14 +179,19 @@ class UserNotifier extends Notifier<UserState> {
     final user = state.user;
     if (user == null) throw Exception('로그인이 필요합니다.');
 
-    await _api.updateNickname(kakaoId: user.kakaoId, provider: user.provider, nickname: nickname);
+    await _api.updateNickname(
+      kakaoId: user.kakaoId,
+      provider: user.provider,
+      nickname: nickname,
+    );
 
     final updated = user.copyWith(nickname: nickname);
     state = state.copyWith(user: updated);
     await _persistUser(updated);
   }
 
-  Future<bool> checkUserIdAvailable(String userId) => _api.checkUserIdAvailable(userId);
+  Future<bool> checkUserIdAvailable(String userId) =>
+      _api.checkUserIdAvailable(userId);
 
   Future<void> logout() async {
     state = state.copyWith(clearUser: true);
@@ -170,8 +199,13 @@ class UserNotifier extends Notifier<UserState> {
   }
 
   Future<void> _persistUser(AppUser user) {
-    return LocalStore.instance.setString(LocalStore.keyUser, jsonEncode(user.toJson()));
+    return LocalStore.instance.setString(
+      LocalStore.keyUser,
+      jsonEncode(user.toJson()),
+    );
   }
 }
 
-final userProvider = NotifierProvider<UserNotifier, UserState>(UserNotifier.new);
+final userProvider = NotifierProvider<UserNotifier, UserState>(
+  UserNotifier.new,
+);

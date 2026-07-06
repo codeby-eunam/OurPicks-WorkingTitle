@@ -68,7 +68,10 @@ class _KakaoWebViewState extends State<KakaoWebView> {
               children: [
                 CircularProgressIndicator(color: _kWebviewOrange),
                 SizedBox(height: 10),
-                Text('맛집 정보를 불러오는 중...', style: TextStyle(color: Color(0xFF666666), fontSize: 14)),
+                Text(
+                  '맛집 정보를 불러오는 중...',
+                  style: TextStyle(color: Color(0xFF666666), fontSize: 14),
+                ),
               ],
             ),
           ),

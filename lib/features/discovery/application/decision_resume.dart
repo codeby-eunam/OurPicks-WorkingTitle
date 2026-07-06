@@ -39,13 +39,15 @@ class DecisionResumeService {
     required String locationName,
   }) {
     if (remaining.isEmpty) return clear();
-    return _save(ResumableSession(
-      mode: ResumeMode.swipe,
-      restaurants: remaining,
-      liked: liked,
-      locationName: locationName,
-      savedAt: DateTime.now(),
-    ));
+    return _save(
+      ResumableSession(
+        mode: ResumeMode.swipe,
+        restaurants: remaining,
+        liked: liked,
+        locationName: locationName,
+        savedAt: DateTime.now(),
+      ),
+    );
   }
 
   Future<void> saveTournamentSession({
@@ -53,12 +55,14 @@ class DecisionResumeService {
     required String locationName,
   }) {
     if (contenders.length < 2) return clear();
-    return _save(ResumableSession(
-      mode: ResumeMode.tournament,
-      restaurants: contenders,
-      locationName: locationName,
-      savedAt: DateTime.now(),
-    ));
+    return _save(
+      ResumableSession(
+        mode: ResumeMode.tournament,
+        restaurants: contenders,
+        locationName: locationName,
+        savedAt: DateTime.now(),
+      ),
+    );
   }
 
   Future<void> _save(ResumableSession session) async {
@@ -77,18 +81,28 @@ class DecisionResumeService {
     if (raw == null) return null;
     try {
       final json = jsonDecode(raw) as Map<String, dynamic>;
-      final savedAt = DateTime.tryParse(json['savedAt']?.toString() ?? '') ?? DateTime.now();
+      final savedAt =
+          DateTime.tryParse(json['savedAt']?.toString() ?? '') ??
+          DateTime.now();
       if (DateTime.now().difference(savedAt) > _maxAge) {
         await clear();
         return null;
       }
-      final restaurants = (json['restaurants'] as List? ?? []).cast<Map<String, dynamic>>().map(Restaurant.fromJson).toList();
+      final restaurants = (json['restaurants'] as List? ?? [])
+          .cast<Map<String, dynamic>>()
+          .map(Restaurant.fromJson)
+          .toList();
       if (restaurants.length < 2) {
         await clear();
         return null;
       }
-      final liked = (json['liked'] as List? ?? []).cast<Map<String, dynamic>>().map(Restaurant.fromJson).toList();
-      final mode = json['mode'] == 'tournament' ? ResumeMode.tournament : ResumeMode.swipe;
+      final liked = (json['liked'] as List? ?? [])
+          .cast<Map<String, dynamic>>()
+          .map(Restaurant.fromJson)
+          .toList();
+      final mode = json['mode'] == 'tournament'
+          ? ResumeMode.tournament
+          : ResumeMode.swipe;
       return ResumableSession(
         mode: mode,
         restaurants: restaurants,

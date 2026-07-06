@@ -15,6 +15,7 @@ class Place {
 
   final String id;
   final String name;
+
   /// '식당' | '카페'
   final String category;
   final String categoryName;
@@ -65,6 +66,7 @@ class ListItem {
   final String id;
   final String title;
   final int count;
+
   /// '식당' | '카페'
   final String type;
   final String icon;
@@ -100,7 +102,8 @@ class ListItem {
   }
 
   factory ListItem.fromServerJson(Map<String, dynamic> raw) {
-    final rawRestaurants = (raw['restaurants'] as List? ?? []).cast<Map<String, dynamic>>();
+    final rawRestaurants = (raw['restaurants'] as List? ?? [])
+        .cast<Map<String, dynamic>>();
     final places = rawRestaurants.map((r) {
       final category = r['category']?.toString() ?? '';
       final images = (r['images'] as List?)?.cast<String>() ?? const [];
@@ -110,7 +113,9 @@ class ListItem {
         category: category.contains('카페') ? '카페' : '식당',
         categoryName: category,
         address: r['address']?.toString() ?? '',
-        image: images.isNotEmpty ? images.first : 'https://picsum.photos/seed/${r['id']}/200/200',
+        image: images.isNotEmpty
+            ? images.first
+            : 'https://picsum.photos/seed/${r['id']}/200/200',
         placeUrl: r['kakaoUrl']?.toString() ?? '',
       );
     }).toList();
@@ -152,7 +157,9 @@ Place placeFromRestaurant(Restaurant r) {
 /// context/LibraryContext.tsx의 rebuildImages: 최대 4개, 부족하면 첫 이미지로 채움.
 List<String> rebuildImages(List<Place> places) {
   final raw = places.take(4).map((p) => p.image).toList();
-  final fallback = raw.isNotEmpty ? raw.first : 'https://picsum.photos/seed/default/200/200';
+  final fallback = raw.isNotEmpty
+      ? raw.first
+      : 'https://picsum.photos/seed/default/200/200';
   while (raw.length < 4) {
     raw.add(fallback);
   }

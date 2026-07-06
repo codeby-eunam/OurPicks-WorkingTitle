@@ -7,6 +7,9 @@ class LibraryState {
   final bool loading;
 
   LibraryState copyWith({List<ListItem>? lists, bool? loading}) {
-    return LibraryState(lists: lists ?? this.lists, loading: loading ?? this.loading);
+    return LibraryState(
+      lists: lists ?? this.lists,
+      loading: loading ?? this.loading,
+    );
   }
 }

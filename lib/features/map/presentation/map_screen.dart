@@ -49,7 +49,9 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
       );
       if (!mounted) return;
       setState(() {
@@ -90,9 +92,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               )
               .toList();
 
-          return AppMapView(centerLat: _lat!, centerLng: _lng!, markers: markers);
+          return AppMapView(
+            centerLat: _lat!,
+            centerLng: _lng!,
+            markers: markers,
+          );
         },
-        loading: () => const Center(child: CircularProgressIndicator(color: AppColors.primary)),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
         error: (err, _) => Center(child: Text('가게 정보를 불러오지 못했습니다: $err')),
       ),
     );

@@ -11,7 +11,6 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_api.dart';
-import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
 import '../../discovery/application/decision_resume.dart';
 import '../../discovery/application/decision_session.dart';
@@ -77,12 +76,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (session.mode == ResumeMode.swipe) {
       context.push(
         '/swipe',
-        extra: {'restaurants': session.restaurants, 'locationName': session.locationName, 'liked': session.liked},
+        extra: {
+          'restaurants': session.restaurants,
+          'locationName': session.locationName,
+          'liked': session.liked,
+        },
       );
     } else {
       context.push(
         '/tournament',
-        extra: {'restaurants': session.restaurants, 'locationName': session.locationName},
+        extra: {
+          'restaurants': session.restaurants,
+          'locationName': session.locationName,
+        },
       );
     }
   }
@@ -97,7 +103,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Future<void> _loadRecentSearches() async {
-    final list = await LocalStore.instance.getStringList(LocalStore.keyRecentLocationSearches);
+    final list = await LocalStore.instance.getStringList(
+      LocalStore.keyRecentLocationSearches,
+    );
     if (mounted && list != null) setState(() => _recentSearches = list);
   }
 
@@ -135,20 +143,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
       }
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+      if (permission == LocationPermission.denied ||
+          permission == LocationPermission.deniedForever) {
         _showAlert('위치 권한 필요', '위치 권한을 허용해야 현재 위치를 사용할 수 있습니다.');
         return;
       }
 
       final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.medium),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
       );
       _locationCoords = (lat: position.latitude, lng: position.longitude);
 
       try {
-        final placemarks = await Geocoding().placemarkFromCoordinates(position.latitude, position.longitude);
+        final placemarks = await Geocoding().placemarkFromCoordinates(
+          position.latitude,
+          position.longitude,
+        );
         final place = placemarks.firstOrNull;
-        final parts = [place?.subLocality, place?.locality].whereType<String>().where((s) => s.isNotEmpty);
+        final parts = [
+          place?.subLocality,
+          place?.locality,
+        ].whereType<String>().where((s) => s.isNotEmpty);
         final label = parts.join(' ');
         setState(() => _location = label.isNotEmpty ? '$label 근처' : '현재 위치');
       } catch (_) {
@@ -167,7 +184,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       builder: (context) => AlertDialog(
         title: Text(title),
         content: Text(message),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('확인'))],
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('확인'),
+          ),
+        ],
       ),
     );
   }
@@ -182,11 +204,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Future<void> _selectLocation(String name, {double? lat, double? lng}) async {
     setState(() {
       _location = name;
-      _locationCoords = (lat != null && lng != null) ? (lat: lat, lng: lng) : null;
+      _locationCoords = (lat != null && lng != null)
+          ? (lat: lat, lng: lng)
+          : null;
     });
-    final updated = [name, ..._recentSearches.where((s) => s != name)].take(7).toList();
+    final updated = [
+      name,
+      ..._recentSearches.where((s) => s != name),
+    ].take(7).toList();
     setState(() => _recentSearches = updated);
-    await LocalStore.instance.setStringList(LocalStore.keyRecentLocationSearches, updated);
+    await LocalStore.instance.setStringList(
+      LocalStore.keyRecentLocationSearches,
+      updated,
+    );
     AnalyticsService.instance.logLocationSearched(
       _searchController.text.isNotEmpty ? _searchController.text : name,
       _searchResults.length,
@@ -197,7 +227,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Future<void> _clearRecentSearches() async {
     setState(() => _recentSearches = []);
-    await LocalStore.instance.setStringList(LocalStore.keyRecentLocationSearches, []);
+    await LocalStore.instance.setStringList(
+      LocalStore.keyRecentLocationSearches,
+      [],
+    );
   }
 
   void _toggleFilter(String id) {
@@ -206,7 +239,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         _selectedFilters = ['all'];
       } else {
         final without = _selectedFilters.where((f) => f != 'all').toList();
-        final next = without.contains(id) ? without.where((f) => f != id).toList() : [...without, id];
+        final next = without.contains(id)
+            ? without.where((f) => f != id).toList()
+            : [...without, id];
         _selectedFilters = next.isEmpty ? ['all'] : next;
       }
     });
@@ -257,18 +292,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               padding: const EdgeInsets.only(bottom: 32),
               child: Column(
                 children: [
-                  if (_resumeSession != null) _buildResumeBanner(_resumeSession!),
+                  if (_resumeSession != null)
+                    _buildResumeBanner(_resumeSession!),
                   _buildSearchBar(),
                   _buildFilterGrid(),
                   _buildStartButton(),
                   const Padding(
                     padding: EdgeInsets.only(top: 14),
-                    child: Text('고민하지 말고, 맛있게!', style: TextStyle(color: Color(0xFF6B7280), fontSize: 15)),
+                    child: Text(
+                      '고민하지 말고, 맛있게!',
+                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 15),
+                    ),
                   ),
                 ],
               ),
             ),
-            const FloatingContactButton(),
           ],
         ),
       ),
@@ -278,7 +316,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildResumeBanner(ResumableSession session) {
     final modeLabel = session.mode == ResumeMode.swipe ? '스와이프' : '토너먼트';
-    final locationLabel = session.locationName.isNotEmpty ? '${session.locationName} · ' : '';
+    final locationLabel = session.locationName.isNotEmpty
+        ? '${session.locationName} · '
+        : '';
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -295,10 +335,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('고르던 중이었어요', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.grey.shade800)),
+                Text(
+                  '고르던 중이었어요',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.grey.shade800,
+                  ),
+                ),
                 Text(
                   '$locationLabel$modeLabel · 후보 ${session.restaurants.length}곳',
-                  style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textSecondary,
+                  ),
                 ),
               ],
             ),
@@ -335,7 +385,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Text(
                   _locating ? '위치 가져오는 중...' : _location,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 15, color: Color(0xFF1F2937), fontWeight: FontWeight.w500),
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Color(0xFF1F2937),
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
             ),
@@ -343,8 +397,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             onPressed: _locating ? null : _handleCurrentLocation,
             icon: _locating
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.primary))
-                : const Icon(Icons.my_location, size: 22, color: Color(0xFF6B7280)),
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: AppColors.primary,
+                    ),
+                  )
+                : const Icon(
+                    Icons.my_location,
+                    size: 22,
+                    color: Color(0xFF6B7280),
+                  ),
           ),
           IconButton(
             onPressed: () => setState(() => _searchVisible = true),
@@ -387,11 +452,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           onPressed: _startLoading ? null : _handleStart,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(vertical: 18),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(50),
+            ),
           ),
           child: _startLoading
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-              : const Text('시작하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700, letterSpacing: 0.5)),
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Text(
+                  '시작하기',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.5,
+                  ),
+                ),
         ),
       ),
     );
@@ -407,12 +488,25 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
                 child: Row(
                   children: [
-                    IconButton(onPressed: _closeModal, icon: const Icon(Icons.chevron_left, size: 26)),
+                    IconButton(
+                      onPressed: _closeModal,
+                      icon: const Icon(Icons.chevron_left, size: 26),
+                    ),
                     const Expanded(
-                      child: Text('위치 검색', textAlign: TextAlign.center, style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
+                      child: Text(
+                        '위치 검색',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 40),
                   ],
@@ -425,10 +519,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   autofocus: true,
                   decoration: InputDecoration(
                     hintText: '지역, 주소를 검색하세요',
-                    prefixIcon: const Icon(Icons.search, size: 18, color: Color(0xFF9CA3AF)),
+                    prefixIcon: const Icon(
+                      Icons.search,
+                      size: 18,
+                      color: Color(0xFF9CA3AF),
+                    ),
                     filled: true,
                     fillColor: AppColors.surfaceMuted,
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide.none,
+                    ),
                   ),
                 ),
               ),
@@ -441,9 +542,20 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   child: Row(
                     children: [
-                      Icon(Icons.my_location, size: 20, color: AppColors.primary),
+                      Icon(
+                        Icons.my_location,
+                        size: 20,
+                        color: AppColors.primary,
+                      ),
                       SizedBox(width: 10),
-                      Text('현재 위치 사용', style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: AppColors.primary)),
+                      Text(
+                        '현재 위치 사용',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -451,10 +563,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const Divider(height: 1),
               Expanded(
                 child: _searching
-                    ? const Center(child: CircularProgressIndicator(color: AppColors.primary))
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      )
                     : isSearching
-                        ? _buildResultsList()
-                        : _buildRecentList(),
+                    ? _buildResultsList()
+                    : _buildRecentList(),
               ),
             ],
           ),
@@ -465,17 +581,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildResultsList() {
     if (_searchResults.isEmpty) {
-      return const Center(child: Text('검색 결과가 없습니다.', style: TextStyle(color: AppColors.textSecondary)));
+      return const Center(
+        child: Text(
+          '검색 결과가 없습니다.',
+          style: TextStyle(color: AppColors.textSecondary),
+        ),
+      );
     }
     return ListView.builder(
       itemCount: _searchResults.length,
       itemBuilder: (context, index) {
         final item = _searchResults[index];
         return ListTile(
-          leading: const Icon(Icons.location_on_outlined, size: 16, color: Color(0xFF9CA3AF)),
+          leading: const Icon(
+            Icons.location_on_outlined,
+            size: 16,
+            color: Color(0xFF9CA3AF),
+          ),
           title: Text(item.placeName),
           subtitle: item.addressName.isNotEmpty ? Text(item.addressName) : null,
-          onTap: () => _selectLocation('${item.placeName} 근처', lat: item.lat, lng: item.lng),
+          onTap: () => _selectLocation(
+            '${item.placeName} 근처',
+            lat: item.lat,
+            lng: item.lng,
+          ),
         );
       },
     );
@@ -490,20 +619,39 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('최근 검색', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppColors.textSecondary)),
-                TextButton(onPressed: _clearRecentSearches, child: const Text('전체 삭제', style: TextStyle(fontSize: 12))),
+                const Text(
+                  '최근 검색',
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                TextButton(
+                  onPressed: _clearRecentSearches,
+                  child: const Text('전체 삭제', style: TextStyle(fontSize: 12)),
+                ),
               ],
             ),
           ),
         if (_recentSearches.isEmpty)
           const Padding(
             padding: EdgeInsets.only(top: 40),
-            child: Center(child: Text('최근 검색 기록이 없습니다.', style: TextStyle(color: AppColors.textSecondary))),
+            child: Center(
+              child: Text(
+                '최근 검색 기록이 없습니다.',
+                style: TextStyle(color: AppColors.textSecondary),
+              ),
+            ),
           )
         else
           for (final item in _recentSearches)
             ListTile(
-              leading: const Icon(Icons.history, size: 16, color: Color(0xFF9CA3AF)),
+              leading: const Icon(
+                Icons.history,
+                size: 16,
+                color: Color(0xFF9CA3AF),
+              ),
               title: Text(item),
               onTap: () => _selectLocation(item),
             ),
@@ -513,7 +661,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 }
 
 class _FilterChip extends StatelessWidget {
-  const _FilterChip({required this.emoji, required this.label, required this.active, required this.onTap});
+  const _FilterChip({
+    required this.emoji,
+    required this.label,
+    required this.active,
+    required this.onTap,
+  });
 
   final String emoji;
   final String label;
@@ -529,7 +682,10 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: active ? AppColors.primary : AppColors.border, width: 0.5),
+          border: Border.all(
+            color: active ? AppColors.primary : AppColors.border,
+            width: 0.5,
+          ),
         ),
         alignment: Alignment.center,
         child: Column(
@@ -537,7 +693,14 @@ class _FilterChip extends StatelessWidget {
           children: [
             Text(emoji, style: const TextStyle(fontSize: 26)),
             const SizedBox(height: 6),
-            Text(label, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: active ? Colors.white : const Color(0xFF374151))),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: active ? Colors.white : const Color(0xFF374151),
+              ),
+            ),
           ],
         ),
       ),

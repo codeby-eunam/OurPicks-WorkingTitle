@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../shared/widgets/floating_contact_button.dart';
 import '../../../shared/widgets/social_login_required_view.dart';
 import '../../auth/application/user_notifier.dart';
 import '../../library/application/library_notifier.dart';
@@ -50,16 +49,37 @@ class ProfileTabScreen extends ConsumerWidget {
                         Container(
                           width: 76,
                           height: 76,
-                          decoration: BoxDecoration(color: const Color(0xFFFFF0EB), shape: BoxShape.circle, border: Border.all(color: AppColors.primary, width: 2.5)),
-                          child: const Center(child: Text('🐻', style: TextStyle(fontSize: 38))),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF0EB),
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.primary,
+                              width: 2.5,
+                            ),
+                          ),
+                          child: const Center(
+                            child: Text('🐻', style: TextStyle(fontSize: 38)),
+                          ),
                         ),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(user.nickname, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-                              Text(user.userId, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+                              Text(
+                                user.nickname,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              Text(
+                                user.userId,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -78,23 +98,47 @@ class ProfileTabScreen extends ConsumerWidget {
                     ),
                   ),
                   _menuSection(context, '나의 기록', [
-                    _MenuItem(icon: '🍽️', label: '나의 선택 기록', onTap: () => context.push('/my-selections')),
+                    _MenuItem(
+                      icon: '🍽️',
+                      label: '나의 선택 기록',
+                      onTap: () => context.push('/my-selections'),
+                    ),
                   ]),
                   _menuSection(context, '설정', [
-                    _MenuItem(icon: '✏️', label: '프로필 수정', onTap: () => context.push('/edit-profile')),
-                    _MenuItem(icon: '⚙️', label: '앱 설정', onTap: () => context.push('/settings')),
+                    _MenuItem(
+                      icon: '✏️',
+                      label: '프로필 수정',
+                      onTap: () => context.push('/edit-profile'),
+                    ),
+                    _MenuItem(
+                      icon: '⚙️',
+                      label: '앱 설정',
+                      onTap: () => context.push('/settings'),
+                    ),
                   ]),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 8,
+                    ),
                     child: SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
                         onPressed: () => _confirmLogout(context, ref),
                         style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFFFCA5A5), width: 1.5),
+                          side: const BorderSide(
+                            color: Color(0xFFFCA5A5),
+                            width: 1.5,
+                          ),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
-                        child: const Text('로그아웃', style: TextStyle(color: AppColors.error, fontWeight: FontWeight.w600)),
+                        child: const Text(
+                          '로그아웃',
+                          style: TextStyle(
+                            color: AppColors.error,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -102,26 +146,40 @@ class ProfileTabScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(top: 16),
                     child: Text(
                       '가입일: ${DateFormat('yyyy. MM. dd').format(DateTime.tryParse(user.createdAt) ?? DateTime.now())}',
-                      style: const TextStyle(fontSize: 12, color: Color(0xFFD1D5DB)),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFFD1D5DB),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
-            const FloatingContactButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _menuSection(BuildContext context, String title, List<_MenuItem> items) {
+  Widget _menuSection(
+    BuildContext context,
+    String title,
+    List<_MenuItem> items,
+  ) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 24, 16, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title.toUpperCase(), style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary, letterSpacing: 0.8)),
+          Text(
+            title.toUpperCase(),
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              color: AppColors.textSecondary,
+              letterSpacing: 0.8,
+            ),
+          ),
           const SizedBox(height: 10),
           Container(
             decoration: BoxDecoration(
@@ -151,7 +209,10 @@ class ProfileTabScreen extends ConsumerWidget {
         title: const Text('로그아웃'),
         content: const Text('로그아웃 하시겠어요?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('취소')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('취소'),
+          ),
           TextButton(
             onPressed: () {
               ref.read(userProvider.notifier).logout();
@@ -175,8 +236,17 @@ class _StatItem extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
-          Text(label, style: const TextStyle(fontSize: 12, color: AppColors.textSecondary)),
+          Text(
+            value,
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
+          ),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );
@@ -186,11 +256,16 @@ class _StatItem extends StatelessWidget {
 class _StatDivider extends StatelessWidget {
   const _StatDivider();
   @override
-  Widget build(BuildContext context) => Container(width: 1, height: 32, color: const Color(0xFFF3F4F6));
+  Widget build(BuildContext context) =>
+      Container(width: 1, height: 32, color: const Color(0xFFF3F4F6));
 }
 
 class _MenuItem extends StatelessWidget {
-  const _MenuItem({required this.icon, required this.label, required this.onTap});
+  const _MenuItem({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
   final String icon;
   final String label;
   final VoidCallback onTap;
@@ -205,7 +280,16 @@ class _MenuItem extends StatelessWidget {
           children: [
             SizedBox(width: 24, child: Text(icon, textAlign: TextAlign.center)),
             const SizedBox(width: 12),
-            Expanded(child: Text(label, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF374151)))),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xFF374151),
+                ),
+              ),
+            ),
             const Icon(Icons.chevron_right, color: Color(0xFFD1D5DB)),
           ],
         ),

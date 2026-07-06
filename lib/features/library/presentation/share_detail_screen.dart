@@ -11,7 +11,16 @@ import '../../auth/application/user_notifier.dart';
 import '../data/library_api.dart';
 
 Restaurant _placeToRestaurant(Place p) {
-  return Restaurant(id: p.id, placeName: p.name, categoryName: p.categoryName, addressName: p.address, roadAddressName: '', x: '0', y: '0', placeUrl: p.placeUrl);
+  return Restaurant(
+    id: p.id,
+    placeName: p.name,
+    categoryName: p.categoryName,
+    addressName: p.address,
+    roadAddressName: '',
+    x: '0',
+    y: '0',
+    placeUrl: p.placeUrl,
+  );
 }
 
 /// Port of app/share/[shareToken].tsx: read-only public list view.
@@ -54,7 +63,11 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator(color: AppColors.primary)));
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
+      );
     }
     if (_error || _list == null) {
       return Scaffold(
@@ -67,9 +80,15 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
               children: [
                 Text('🔒', style: TextStyle(fontSize: 48)),
                 SizedBox(height: 12),
-                Text('볼 수 없는 보관함이에요', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700)),
+                Text(
+                  '볼 수 없는 보관함이에요',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                ),
                 SizedBox(height: 6),
-                Text('비공개이거나 존재하지 않는 보관함이에요', style: TextStyle(color: AppColors.textSecondary)),
+                Text(
+                  '비공개이거나 존재하지 않는 보관함이에요',
+                  style: TextStyle(color: AppColors.textSecondary),
+                ),
               ],
             ),
           ),
@@ -90,7 +109,10 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: Row(
                 children: [
-                  IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.chevron_left, size: 32)),
+                  IconButton(
+                    onPressed: () => context.pop(),
+                    icon: const Icon(Icons.chevron_left, size: 32),
+                  ),
                   const Spacer(),
                   OutlinedButton.icon(
                     onPressed: () => _handleShare(list),
@@ -100,24 +122,63 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                   const SizedBox(width: 8),
                   if (isOwner) ...[
                     ElevatedButton.icon(
-                      onPressed: () => context.push('/library-detail', extra: {'listId': list.id}),
-                      style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-                      icon: const Icon(Icons.edit, size: 14, color: Colors.white),
-                      label: const Text('편집', style: TextStyle(fontSize: 13, color: Colors.white)),
+                      onPressed: () => context.push(
+                        '/library-detail',
+                        extra: {'listId': list.id},
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.secondary,
+                      ),
+                      icon: const Icon(
+                        Icons.edit,
+                        size: 14,
+                        color: Colors.white,
+                      ),
+                      label: const Text(
+                        '편집',
+                        style: TextStyle(fontSize: 13, color: Colors.white),
+                      ),
                     ),
                     const SizedBox(width: 8),
                   ],
                   ElevatedButton.icon(
-                    onPressed: () => context.push('/swipe', extra: {'restaurants': list.places.map(_placeToRestaurant).toList(), 'locationName': list.title}),
-                    style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
-                    icon: const Icon(Icons.swipe, size: 14, color: Colors.white),
-                    label: const Text('Swipe', style: TextStyle(fontSize: 13, color: Colors.white)),
+                    onPressed: () => context.push(
+                      '/swipe',
+                      extra: {
+                        'restaurants': list.places
+                            .map(_placeToRestaurant)
+                            .toList(),
+                        'locationName': list.title,
+                      },
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondary,
+                    ),
+                    icon: const Icon(
+                      Icons.swipe,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Swipe',
+                      style: TextStyle(fontSize: 13, color: Colors.white),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton.icon(
-                    onPressed: () => context.push('/tournament', extra: {'restaurants': list.places.map(_placeToRestaurant).toList()}),
+                    onPressed: () => context.push(
+                      '/tournament',
+                      extra: {
+                        'restaurants': list.places
+                            .map(_placeToRestaurant)
+                            .toList(),
+                      },
+                    ),
                     icon: const Text('🏆', style: TextStyle(fontSize: 13)),
-                    label: const Text('Tournament', style: TextStyle(fontSize: 13, color: Colors.white)),
+                    label: const Text(
+                      'Tournament',
+                      style: TextStyle(fontSize: 13, color: Colors.white),
+                    ),
                   ),
                 ],
               ),
@@ -135,17 +196,45 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                         children: [
                           Row(
                             children: [
-                              Container(width: 10, height: 10, decoration: const BoxDecoration(color: AppColors.secondary, borderRadius: BorderRadius.all(Radius.circular(2)))),
+                              Container(
+                                width: 10,
+                                height: 10,
+                                decoration: const BoxDecoration(
+                                  color: AppColors.secondary,
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(2),
+                                  ),
+                                ),
+                              ),
                               const SizedBox(width: 6),
                               Text(
-                                isOwner ? '나의 찜 리스트' : '${list.ownerUserId ?? '누군가'}의 찜 리스트',
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.secondary),
+                                isOwner
+                                    ? '나의 찜 리스트'
+                                    : '${list.ownerUserId ?? '누군가'}의 찜 리스트',
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.secondary,
+                                ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 8),
-                          Text(list.title, maxLines: 2, style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-                          Text('찜한 최고의 맛집 리스트 (${list.places.length}곳)', style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
+                          Text(
+                            list.title,
+                            maxLines: 2,
+                            style: const TextStyle(
+                              fontSize: 28,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          Text(
+                            '찜한 최고의 맛집 리스트 (${list.places.length}곳)',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -164,23 +253,61 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.border, width: 0.5),
+                                border: Border.all(
+                                  color: AppColors.border,
+                                  width: 0.5,
+                                ),
                               ),
                               clipBehavior: Clip.antiAlias,
                               child: GestureDetector(
-                                onTap: () => context.push('/restaurant-detail', extra: {'placeId': place.id, 'placeUrl': place.placeUrl}),
+                                onTap: () => context.push(
+                                  '/restaurant-detail',
+                                  extra: {
+                                    'placeId': place.id,
+                                    'placeUrl': place.placeUrl,
+                                  },
+                                ),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    AspectRatio(aspectRatio: 1.4, child: CachedNetworkImage(imageUrl: place.image, fit: BoxFit.cover, width: double.infinity)),
+                                    AspectRatio(
+                                      aspectRatio: 1.4,
+                                      child: CachedNetworkImage(
+                                        imageUrl: place.image,
+                                        fit: BoxFit.cover,
+                                        width: double.infinity,
+                                      ),
+                                    ),
                                     Padding(
-                                      padding: const EdgeInsets.fromLTRB(12, 10, 12, 6),
+                                      padding: const EdgeInsets.fromLTRB(
+                                        12,
+                                        10,
+                                        12,
+                                        6,
+                                      ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(place.name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w700)),
+                                          Text(
+                                            place.name,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
                                           const SizedBox(height: 4),
-                                          Text(place.address, maxLines: 2, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+                                          Text(
+                                            place.address,
+                                            maxLines: 2,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 11,
+                                              color: AppColors.textSecondary,
+                                            ),
+                                          ),
                                         ],
                                       ),
                                     ),
@@ -204,6 +331,8 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
   Future<void> _handleShare(ListItem list) async {
     final token = list.shareToken ?? widget.shareToken;
     final url = 'https://dangmatch-y7al.vercel.app/share/$token';
-    await SharePlus.instance.share(ShareParams(text: 'Dangmatch에서 "${list.title}" 리스트를 확인해보세요!\n$url'));
+    await SharePlus.instance.share(
+      ShareParams(text: 'Dangmatch에서 "${list.title}" 리스트를 확인해보세요!\n$url'),
+    );
   }
 }

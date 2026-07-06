@@ -55,7 +55,10 @@ class AppMapView extends StatelessWidget {
 
 /// Bottom sheet shown when a restaurant marker is tapped, mirroring the
 /// place summary the RN app shows via KakaoWebView/restaurant-detail.
-Future<void> showRestaurantMarkerSheet(BuildContext context, AppMapMarker marker) {
+Future<void> showRestaurantMarkerSheet(
+  BuildContext context,
+  AppMapMarker marker,
+) {
   final payload = marker.payload;
   final category = payload['category_name']?.toString() ?? '';
   final address = payload['road_address_name']?.toString().isNotEmpty == true
@@ -84,11 +87,17 @@ Future<void> showRestaurantMarkerSheet(BuildContext context, AppMapMarker marker
             ),
             if (category.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text(category, style: const TextStyle(color: AppColors.textSecondary)),
+              Text(
+                category,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
             ],
             if (address.isNotEmpty) ...[
               const SizedBox(height: 6),
-              Text(address, style: const TextStyle(color: AppColors.textSecondary)),
+              Text(
+                address,
+                style: const TextStyle(color: AppColors.textSecondary),
+              ),
             ],
             const SizedBox(height: 16),
             SizedBox(

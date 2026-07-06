@@ -13,11 +13,23 @@ class AppTypography {
   /// -0.02em → 로직셀 픽셀 letterSpacing으로 환산 (Flutter는 em 단위를 지원하지 않음).
   static double headingLetterSpacing(double fontSize) => fontSize * -0.02;
 
-  static TextStyle heading(double fontSize, {Color color = AppColors.textPrimary, FontWeight weight = emphasis}) {
-    return TextStyle(fontSize: fontSize, fontWeight: weight, letterSpacing: headingLetterSpacing(fontSize), color: color);
+  static TextStyle heading(
+    double fontSize, {
+    Color color = AppColors.textPrimary,
+    FontWeight weight = emphasis,
+  }) {
+    return TextStyle(
+      fontSize: fontSize,
+      fontWeight: weight,
+      letterSpacing: headingLetterSpacing(fontSize),
+      color: color,
+    );
   }
 
-  static TextStyle bodyStyle(double fontSize, {Color color = AppColors.textPrimary}) {
+  static TextStyle bodyStyle(
+    double fontSize, {
+    Color color = AppColors.textPrimary,
+  }) {
     return TextStyle(fontSize: fontSize, fontWeight: body, color: color);
   }
 }

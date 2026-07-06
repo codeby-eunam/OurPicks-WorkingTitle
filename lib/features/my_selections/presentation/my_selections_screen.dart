@@ -51,13 +51,18 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
       body: Stack(
         children: [
           if (_loading)
-            const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           else if (_error)
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('불러오는 중 오류가 발생했어요.', style: TextStyle(color: AppColors.textSecondary)),
+                  const Text(
+                    '불러오는 중 오류가 발생했어요.',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                   const SizedBox(height: 8),
                   ElevatedButton(onPressed: _fetch, child: const Text('다시 시도')),
                 ],
@@ -70,9 +75,15 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                 children: [
                   Text('🍽️', style: TextStyle(fontSize: 48)),
                   SizedBox(height: 8),
-                  Text('아직 선택한 맛집이 없어요', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(
+                    '아직 선택한 맛집이 없어요',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   SizedBox(height: 4),
-                  Text('당맷치로 맛집을 골라보세요!', style: TextStyle(color: AppColors.textSecondary)),
+                  Text(
+                    '당맷치로 맛집을 골라보세요!',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                 ],
               ),
             )
@@ -80,7 +91,14 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
             ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                Text('${_logs.length}개의 기록', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
+                Text(
+                  '${_logs.length}개의 기록',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.textSecondary,
+                  ),
+                ),
                 const SizedBox(height: 10),
                 Container(
                   decoration: BoxDecoration(
@@ -91,7 +109,8 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                   child: Column(
                     children: [
                       for (var i = 0; i < _logs.length; i++) ...[
-                        if (i > 0) const Divider(height: 1, indent: 18, endIndent: 18),
+                        if (i > 0)
+                          const Divider(height: 1, indent: 18, endIndent: 18),
                         _buildRow(_logs[i]),
                       ],
                     ],
@@ -110,8 +129,21 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_formatDate(item.selectedAtDate), style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-          Text(item.restaurantName, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF374151))),
+          Text(
+            _formatDate(item.selectedAtDate),
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          Text(
+            item.restaurantName,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF374151),
+            ),
+          ),
         ],
       ),
     );

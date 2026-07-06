@@ -11,10 +11,7 @@ final _knownTemplates = <String Function()>[
   () => '🍽️ 검증된 맛집',
 ];
 
-final _newTemplates = <String Function()>[
-  () => '✨ 새로운 후보',
-  () => '🆕 도전자',
-];
+final _newTemplates = <String Function()>[() => '✨ 새로운 후보', () => '🆕 도전자'];
 
 final _random = Random();
 

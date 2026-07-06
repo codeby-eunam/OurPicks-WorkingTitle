@@ -17,7 +17,8 @@ class LocalStore {
     return _prefs ??= await SharedPreferences.getInstance();
   }
 
-  Future<String?> getString(String key) async => (await _instance()).getString(key);
+  Future<String?> getString(String key) async =>
+      (await _instance()).getString(key);
 
   Future<void> setString(String key, String value) async {
     await (await _instance()).setString(key, value);

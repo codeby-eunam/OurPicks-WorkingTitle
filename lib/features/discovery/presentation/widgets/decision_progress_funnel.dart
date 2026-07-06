@@ -19,11 +19,22 @@ class DecisionProgressFunnel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('오늘의 선택 과정', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.textMuted)),
+        const Text(
+          '오늘의 선택 과정',
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textMuted,
+          ),
+        ),
         const SizedBox(height: 10),
         for (var i = 0; i < stages.length; i++) ...[
           if (i > 0) const SizedBox(height: 6),
-          _FunnelRow(stage: stages[i], ratio: stages[i].count / maxCount, isLast: i == stages.length - 1),
+          _FunnelRow(
+            stage: stages[i],
+            ratio: stages[i].count / maxCount,
+            isLast: i == stages.length - 1,
+          ),
         ],
       ],
     );
@@ -31,7 +42,11 @@ class DecisionProgressFunnel extends StatelessWidget {
 }
 
 class _FunnelRow extends StatelessWidget {
-  const _FunnelRow({required this.stage, required this.ratio, required this.isLast});
+  const _FunnelRow({
+    required this.stage,
+    required this.ratio,
+    required this.isLast,
+  });
 
   final FunnelStage stage;
   final double ratio;
@@ -43,7 +58,12 @@ class _FunnelRow extends StatelessWidget {
       children: [
         SizedBox(
           width: 68,
-          child: Text(stage.label, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppColors.textMuted)),
+          child: Text(
+            stage.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -60,7 +80,11 @@ class _FunnelRow extends StatelessWidget {
               ),
               child: Text(
                 '${stage.count}',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white),
+                style: const TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: Colors.white,
+                ),
               ),
             ),
           ),

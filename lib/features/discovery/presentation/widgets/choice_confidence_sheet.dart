@@ -50,21 +50,36 @@ class _ChoiceConfidenceSheetState extends State<ChoiceConfidenceSheet> {
               width: 40,
               height: 4,
               margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(color: AppColors.border, borderRadius: AppRadius.pillAll),
+              decoration: BoxDecoration(
+                color: AppColors.border,
+                borderRadius: AppRadius.pillAll,
+              ),
             ),
             if (_picked == null) ...[
-              const Text('이 선택, 확신이 들어요?', style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              const Text(
+                '이 선택, 확신이 들어요?',
+                style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+              ),
               const SizedBox(height: 4),
-              const Text('다음에 더 좋은 추천을 위해 알려주세요', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
+              const Text(
+                '다음에 더 좋은 추천을 위해 알려주세요',
+                style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [for (final option in _kOptions) _OptionButton(option: option, onTap: () => _pick(option))],
+                children: [
+                  for (final option in _kOptions)
+                    _OptionButton(option: option, onTap: () => _pick(option)),
+                ],
               ),
             ] else ...[
               const Text('🙏', style: TextStyle(fontSize: 36)),
               const SizedBox(height: 8),
-              const Text('소중한 의견 감사해요!', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+              const Text(
+                '소중한 의견 감사해요!',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+              ),
             ],
           ],
         ),
@@ -87,13 +102,22 @@ class _OptionButton extends StatelessWidget {
       child: Container(
         width: 72,
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(borderRadius: AppRadius.lgAll, border: Border.all(color: AppColors.border, width: AppRadius.hairline)),
+        decoration: BoxDecoration(
+          borderRadius: AppRadius.lgAll,
+          border: Border.all(
+            color: AppColors.border,
+            width: AppRadius.hairline,
+          ),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(option.emoji, style: const TextStyle(fontSize: 26)),
             const SizedBox(height: 6),
-            Text(option.label, style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
+            Text(
+              option.label,
+              style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+            ),
           ],
         ),
       ),

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/services/restaurant_api.dart';
-import '../../../shared/widgets/floating_contact_button.dart';
 import '../application/decision_session.dart';
 import '../domain/category_map.dart';
 
@@ -38,7 +37,10 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
   }
 
   List<String> _resolveCategories() {
-    final filterIds = widget.categoryFilters.split(',').where((s) => s.isNotEmpty).toList();
+    final filterIds = widget.categoryFilters
+        .split(',')
+        .where((s) => s.isNotEmpty)
+        .toList();
     final ids = filterIds.isEmpty ? ['all'] : filterIds;
     if (ids.contains('all')) return kCategoryMap['all']!;
     final categories = <String>{};
@@ -54,7 +56,14 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
       final categories = _resolveCategories();
       final api = RestaurantApi();
       final results = await Future.wait(
-        categories.map((cat) => api.fetchNearby(lat: widget.lat, lng: widget.lng, category: cat, radius: kAutoRadiusMeters)),
+        categories.map(
+          (cat) => api.fetchNearby(
+            lat: widget.lat,
+            lng: widget.lng,
+            category: cat,
+            radius: kAutoRadiusMeters,
+          ),
+        ),
       );
 
       final seen = <String>{};
@@ -89,7 +98,10 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
 
       DecisionSessionService.instance.begin();
       DecisionSessionService.instance.recordStage('후보', restaurants.length);
-      final extra = {'restaurants': restaurants, 'locationName': widget.locationName};
+      final extra = {
+        'restaurants': restaurants,
+        'locationName': widget.locationName,
+      };
       if (restaurants.length > kSwipeThreshold) {
         context.pushReplacement('/swipe', extra: extra);
       } else {
@@ -105,48 +117,68 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
     return Scaffold(
       backgroundColor: AppColors.surfaceMuted,
       body: SafeArea(
-        child: Stack(
-          children: [
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: _error
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const Text('😥', style: TextStyle(fontSize: 52)),
-                          const SizedBox(height: 12),
-                          const Text(
-                            '가게 정보를 불러오지 못했습니다.',
-                            style: TextStyle(fontSize: 16, color: Color(0xFF374151), fontWeight: FontWeight.w600),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _autoFetch,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 14),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
-                            ),
-                            child: const Text('다시 시도'),
-                          ),
-                          TextButton(onPressed: () => context.pop(), child: const Text('돌아가기')),
-                        ],
-                      )
-                    : Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const CircularProgressIndicator(color: AppColors.primary),
-                          const SizedBox(height: 12),
-                          const Text('맛집을 찾고 있어요', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w800, color: AppColors.textPrimary)),
-                          const SizedBox(height: 4),
-                          Text('📍 ${widget.locationName} · 반경 3km', style: const TextStyle(fontSize: 14, color: Color(0xFF6B7280))),
-                        ],
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: _error
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text('😥', style: TextStyle(fontSize: 52)),
+                      const SizedBox(height: 12),
+                      const Text(
+                        '가게 정보를 불러오지 못했습니다.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFF374151),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-              ),
-            ),
-            const FloatingContactButton(),
-          ],
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _autoFetch,
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 36,
+                            vertical: 14,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                        ),
+                        child: const Text('다시 시도'),
+                      ),
+                      TextButton(
+                        onPressed: () => context.pop(),
+                        child: const Text('돌아가기'),
+                      ),
+                    ],
+                  )
+                : Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircularProgressIndicator(color: AppColors.primary),
+                      const SizedBox(height: 12),
+                      const Text(
+                        '맛집을 찾고 있어요',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '📍 ${widget.locationName} · 반경 3km',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Color(0xFF6B7280),
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );

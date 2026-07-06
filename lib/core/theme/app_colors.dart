@@ -15,7 +15,8 @@ class AppColors {
   static const surfaceMuted = Color(0xFFEFEBE3); // 배경보다 살짝 어두운 웜 뉴트럴 (칩/구분 영역)
   static const textPrimary = Color(0xFF1A1A1A);
   static const textSecondary = Color(0xFF6B6B6B);
-  static const textMuted = textSecondary; // 별칭: 기존 코드에서 textMuted로 참조되는 곳들도 동일 톤 사용
+  static const textMuted =
+      textSecondary; // 별칭: 기존 코드에서 textMuted로 참조되는 곳들도 동일 톤 사용
   static const error = Color(0xFFEF4444);
   static const gold = Color(0xFFFFD700);
 
