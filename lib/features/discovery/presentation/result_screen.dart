@@ -39,9 +39,17 @@ class ResultScreen extends ConsumerStatefulWidget {
   ConsumerState<ResultScreen> createState() => _ResultScreenState();
 }
 
+String _formatElapsed(Duration d) {
+  final minutes = d.inMinutes;
+  final seconds = d.inSeconds % 60;
+  if (minutes > 0) return '$minutes분 $seconds초';
+  return '$seconds초';
+}
+
 class _ResultScreenState extends ConsumerState<ResultScreen> {
   late final ConfettiController _confettiController;
   late final List<FunnelStage> _funnelStages;
+  late final Duration? _elapsed;
   int? _winCount;
   bool _logged = false;
 
@@ -53,7 +61,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
       duration: const Duration(seconds: 4),
     );
     _confettiController.play();
-    DecisionSessionService.instance.end();
+    _elapsed = DecisionSessionService.instance.end();
     _loadWinCount();
     WidgetsBinding.instance.addPostFrameCallback((_) => _logSelection());
     Future.delayed(const Duration(milliseconds: 900), _showConfidenceSheet);
@@ -295,7 +303,38 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(color: AppColors.border, width: 0.5),
                       ),
-                      child: DecisionProgressFunnel(stages: _funnelStages),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_elapsed != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Text.rich(
+                                TextSpan(
+                                  style: const TextStyle(fontSize: 15),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${_funnelStages.first.count}개 후보 → ',
+                                      style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '${_formatElapsed(_elapsed)} 만에 결정',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          DecisionProgressFunnel(stages: _funnelStages),
+                        ],
+                      ),
                     ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 360),

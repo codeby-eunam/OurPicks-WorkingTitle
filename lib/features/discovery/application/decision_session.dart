@@ -34,9 +34,12 @@ class DecisionSessionService {
     _stages.add(FunnelStage(label, count));
   }
 
-  /// 우승이 확정되면 타이머만 멈춘다. 퍼널 기록은 결과 화면이 읽을 수 있도록
-  /// 다음 begin() 호출 전까지 유지한다.
-  void end() {
+  /// 우승이 확정되면 타이머를 멈추고 총 소요 시간을 반환한다 (결과 화면의
+  /// "N개 후보 → mm:ss 만에 결정" 문구에 사용). 퍼널 기록은 결과 화면이 읽을 수
+  /// 있도록 다음 begin() 호출 전까지 유지한다.
+  Duration? end() {
+    final startedAt = _startedAt;
     _startedAt = null;
+    return startedAt == null ? null : DateTime.now().difference(startedAt);
   }
 }
