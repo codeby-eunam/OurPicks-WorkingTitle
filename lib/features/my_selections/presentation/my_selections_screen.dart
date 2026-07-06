@@ -44,6 +44,13 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
 
   String _formatDate(DateTime date) => DateFormat('yyyy.MM.dd').format(date);
 
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -88,36 +95,61 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
               ),
             )
           else
-            ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text(
-                  '${_logs.length}개의 기록',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColors.border, width: 0.5),
-                  ),
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < _logs.length; i++) ...[
-                        if (i > 0)
-                          const Divider(height: 1, indent: 18, endIndent: 18),
-                        _buildRow(_logs[i]),
-                      ],
+            Builder(
+              builder: (context) {
+                final today = _logs
+                    .where((l) => _isToday(l.selectedAtDate))
+                    .toList();
+                final earlier = _logs
+                    .where((l) => !_isToday(l.selectedAtDate))
+                    .toList();
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    if (today.isNotEmpty) ...[
+                      _buildSectionHeader('오늘의 결정', today.length),
+                      const SizedBox(height: 10),
+                      _buildLogCard(today),
+                      const SizedBox(height: 20),
                     ],
-                  ),
-                ),
-              ],
+                    if (earlier.isNotEmpty) ...[
+                      _buildSectionHeader('이전 기록', earlier.length),
+                      const SizedBox(height: 10),
+                      _buildLogCard(earlier),
+                    ],
+                  ],
+                );
+              },
             ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, int count) {
+    return Text(
+      '$title · $count개',
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textSecondary,
+      ),
+    );
+  }
+
+  Widget _buildLogCard(List<UserLogEntry> logs) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < logs.length; i++) ...[
+            if (i > 0) const Divider(height: 1, indent: 18, endIndent: 18),
+            _buildRow(logs[i]),
+          ],
         ],
       ),
     );
