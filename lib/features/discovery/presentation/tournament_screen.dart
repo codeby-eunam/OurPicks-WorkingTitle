@@ -9,6 +9,7 @@ import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/services/restaurant_badge.dart';
 import '../../../shared/widgets/kakao_webview.dart';
+import '../application/decision_session.dart';
 import 'widgets/decision_timer_chip.dart';
 
 class _MatchSnapshot {
@@ -62,8 +63,8 @@ class _TournamentScreenState extends State<TournamentScreen> {
 
   Restaurant? get _activeRestaurant => _selectedSide == 'left' ? _left : (_selectedSide == 'right' ? _right : null);
 
-  String _getRoundName() {
-    final total = _bracket.length;
+  String _getRoundName({int? total}) {
+    total ??= _bracket.length;
     switch (total) {
       case 2:
         return '결승전';
@@ -110,9 +111,11 @@ class _TournamentScreenState extends State<TournamentScreen> {
     if (nextIdx >= _totalMatches) {
       if (next.length == 1) {
         RestaurantStatsService.instance.recordWin(next[0].id);
+        DecisionSessionService.instance.recordStage('오늘의 픽', 1);
         context.pushReplacement('/result', extra: {'restaurant': next[0]});
         return;
       }
+      DecisionSessionService.instance.recordStage(_getRoundName(total: next.length), next.length);
       setState(() {
         _bracket = _makeBracket(next);
         _matchIdx = 0;
@@ -151,7 +154,10 @@ class _TournamentScreenState extends State<TournamentScreen> {
 
   void _handleTodayPick() {
     final r = _activeRestaurant;
-    if (r != null) context.push('/result', extra: {'restaurant': r});
+    if (r != null) {
+      DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+      context.push('/result', extra: {'restaurant': r});
+    }
   }
 
   @override

@@ -15,6 +15,7 @@ import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
 import '../application/decision_session.dart';
+import 'widgets/decision_progress_funnel.dart';
 
 String _buildMapUrl(Restaurant r) {
   if (r.naverUrl != null && r.naverUrl!.isNotEmpty) {
@@ -36,12 +37,14 @@ class ResultScreen extends ConsumerStatefulWidget {
 
 class _ResultScreenState extends ConsumerState<ResultScreen> {
   late final ConfettiController _confettiController;
+  late final List<FunnelStage> _funnelStages;
   int? _winCount;
   bool _logged = false;
 
   @override
   void initState() {
     super.initState();
+    _funnelStages = DecisionSessionService.instance.stages;
     _confettiController = ConfettiController(duration: const Duration(seconds: 4));
     _confettiController.play();
     DecisionSessionService.instance.end();
@@ -186,6 +189,18 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       ),
                     ),
                   ),
+                  if (_funnelStages.length >= 2)
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 360),
+                      margin: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: DecisionProgressFunnel(stages: _funnelStages),
+                    ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 360),
                     child: Column(

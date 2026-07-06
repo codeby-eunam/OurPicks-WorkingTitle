@@ -11,6 +11,7 @@ import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/widgets/kakao_webview.dart';
 import '../../library/application/library_notifier.dart';
+import '../application/decision_session.dart';
 import 'widgets/decision_timer_chip.dart';
 
 const _kBgTeal = Color(0xFF1E7874);
@@ -97,6 +98,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> with TickerProviderSt
     }
 
     if (_index + 1 >= _restaurants.length) {
+      DecisionSessionService.instance.recordStage('1차 선택', _liked.length);
       setState(() => _done = true);
     } else {
       setState(() => _index += 1);
@@ -120,6 +122,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> with TickerProviderSt
       AnalyticsService.instance.logRestaurantSelected(
         r.id, r.placeName, categoryLabelFor(r.categoryName), 'swipe', widget.locationName,
       );
+      DecisionSessionService.instance.recordStage('오늘의 픽', 1);
       context.push('/result', extra: {'restaurant': r});
     } else if (likedList.length >= 2) {
       context.push('/tournament', extra: {'restaurants': likedList, 'locationName': widget.locationName});

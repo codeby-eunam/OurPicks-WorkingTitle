@@ -88,6 +88,7 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
       }
 
       DecisionSessionService.instance.begin();
+      DecisionSessionService.instance.recordStage('후보', restaurants.length);
       final extra = {'restaurants': restaurants, 'locationName': widget.locationName};
       if (restaurants.length > kSwipeThreshold) {
         context.pushReplacement('/swipe', extra: extra);
