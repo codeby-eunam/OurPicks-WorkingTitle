@@ -314,11 +314,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  /// 오늘/어제/N일 전 형태로 상대적인 날짜를 표현한다.
+  String _relativeDay(DateTime savedAt) {
+    final today = DateTime.now();
+    final diff = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).difference(DateTime(savedAt.year, savedAt.month, savedAt.day)).inDays;
+    if (diff <= 0) return '오늘';
+    if (diff == 1) return '어제';
+    return '$diff일 전';
+  }
+
   Widget _buildResumeBanner(ResumableSession session) {
-    final modeLabel = session.mode == ResumeMode.swipe ? '스와이프' : '토너먼트';
+    final relativeDay = _relativeDay(session.savedAt);
     final locationLabel = session.locationName.isNotEmpty
-        ? '${session.locationName} · '
-        : '';
+        ? session.locationName
+        : '그때 그';
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -336,15 +349,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '고르던 중이었어요',
+                  '$relativeDay $locationLabel 결정, 이어서 할까요?',
                   style: TextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w500,
                     color: Colors.grey.shade800,
                   ),
                 ),
                 Text(
-                  '$locationLabel$modeLabel · 후보 ${session.restaurants.length}곳',
+                  '후보 ${session.restaurants.length}곳 남음',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
