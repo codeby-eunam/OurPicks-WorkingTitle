@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'app_colors.dart';
 import 'app_radius.dart';
+import 'app_typography.dart';
 
 class AppTheme {
   AppTheme._();
@@ -17,15 +18,25 @@ class AppTheme {
         error: AppColors.error,
         brightness: Brightness.light,
       ),
-      appBarTheme: const AppBarTheme(
+      appBarTheme: AppBarTheme(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
+        titleTextStyle: AppTypography.heading(20),
       ),
-      textTheme: const TextTheme(
-        bodyMedium: TextStyle(color: AppColors.textPrimary),
+      textTheme: TextTheme(
+        headlineLarge: AppTypography.heading(32),
+        headlineMedium: AppTypography.heading(28),
+        headlineSmall: AppTypography.heading(24),
+        titleLarge: AppTypography.heading(20),
+        titleMedium: AppTypography.heading(16),
+        titleSmall: AppTypography.heading(14),
+        bodyLarge: AppTypography.bodyStyle(16),
+        bodyMedium: AppTypography.bodyStyle(14),
+        bodySmall: AppTypography.bodyStyle(12, color: AppColors.textSecondary),
+        labelLarge: AppTypography.heading(15),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -33,13 +44,16 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 0,
           shadowColor: Colors.transparent,
+          textStyle: AppTypography.heading(15, color: Colors.white),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          side: const BorderSide(color: AppColors.border, width: 1.5),
+          foregroundColor: AppColors.textPrimary,
+          textStyle: AppTypography.heading(15),
+          side: const BorderSide(color: AppColors.border, width: AppRadius.hairline),
           shape: RoundedRectangleBorder(borderRadius: AppRadius.mdAll),
         ),
       ),
@@ -48,7 +62,7 @@ class AppTheme {
         color: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.lgAll,
-          side: const BorderSide(color: AppColors.border),
+          side: const BorderSide(color: AppColors.border, width: AppRadius.hairline),
         ),
       ),
       dialogTheme: DialogThemeData(

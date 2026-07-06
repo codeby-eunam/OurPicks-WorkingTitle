@@ -87,7 +87,7 @@ class _OptionButton extends StatelessWidget {
       child: Container(
         width: 72,
         padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(borderRadius: AppRadius.lgAll, border: Border.all(color: AppColors.border)),
+        decoration: BoxDecoration(borderRadius: AppRadius.lgAll, border: Border.all(color: AppColors.border, width: AppRadius.hairline)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

@@ -529,7 +529,7 @@ class _FilterChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: active ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: active ? AppColors.primary : AppColors.border),
+          border: Border.all(color: active ? AppColors.primary : AppColors.border, width: 0.5),
         ),
         alignment: Alignment.center,
         child: Column(

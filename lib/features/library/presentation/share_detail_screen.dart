@@ -164,7 +164,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: AppColors.border),
+                                border: Border.all(color: AppColors.border, width: 0.5),
                               ),
                               clipBehavior: Clip.antiAlias,
                               child: GestureDetector(

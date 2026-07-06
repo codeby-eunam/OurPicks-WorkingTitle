@@ -9,7 +9,7 @@ class AppRadius {
   static const double sm = 8;
 
   /// 버튼, 인풋 필드.
-  static const double md = 12;
+  static const double md = 10;
 
   /// 카드, 리스트 컨테이너.
   static const double lg = 16;
@@ -19,6 +19,9 @@ class AppRadius {
 
   /// 완전한 알약형 (토글, 배지, 라운드 버튼).
   static const double pill = 999;
+
+  /// Apple 스타일 헤어라인 보더 두께.
+  static const double hairline = 0.5;
 
   static BorderRadius get smAll => BorderRadius.circular(sm);
   static BorderRadius get mdAll => BorderRadius.circular(md);
