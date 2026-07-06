@@ -42,8 +42,6 @@ class SettingsScreen extends ConsumerWidget {
           _SectionHeader('앱 설정'),
           _SettingsCard(
             children: [
-              _SettingsTile(icon: Icons.notifications_outlined, label: '알림 설정', onTap: () => context.push('/notification-settings')),
-              const Divider(height: 1, indent: 54),
               _SettingsTile(
                 icon: Icons.palette_outlined,
                 label: '테마',

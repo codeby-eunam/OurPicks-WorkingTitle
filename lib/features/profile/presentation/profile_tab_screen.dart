@@ -32,7 +32,6 @@ class ProfileTabScreen extends ConsumerWidget {
     final user = userState.user!;
     final lists = ref.watch(libraryProvider).lists;
     final publicListCount = lists.where((l) => l.isPublic).length;
-    final isEarlyMember = user.badges.contains('초기멤버');
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -61,24 +60,6 @@ class ProfileTabScreen extends ConsumerWidget {
                             children: [
                               Text(user.nickname, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700)),
                               Text(user.userId, style: const TextStyle(fontSize: 14, color: AppColors.textSecondary)),
-                              if (user.badges.isNotEmpty) ...[
-                                const SizedBox(height: 6),
-                                Wrap(
-                                  spacing: 6,
-                                  children: [
-                                    for (final badge in user.badges)
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: badge == '초기멤버' ? const Color(0xFFFFFBEB) : const Color(0xFFF3F4F6),
-                                          borderRadius: BorderRadius.circular(10),
-                                          border: badge == '초기멤버' ? Border.all(color: const Color(0xFFF59E0B)) : null,
-                                        ),
-                                        child: Text(badge, style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: badge == '초기멤버' ? const Color(0xFFD97706) : const Color(0xFF6B7280))),
-                                      ),
-                                  ],
-                                ),
-                              ],
                             ],
                           ),
                         ),
@@ -93,42 +74,9 @@ class ProfileTabScreen extends ConsumerWidget {
                         _StatItem(label: '보관함', value: '${lists.length}'),
                         const _StatDivider(),
                         _StatItem(label: '공개 리스트', value: '$publicListCount'),
-                        const _StatDivider(),
-                        Expanded(
-                          child: Column(
-                            children: [
-                              const Text('⭐', style: TextStyle(fontSize: 20)),
-                              Text(
-                                isEarlyMember ? '뱃지 확인하기' : '뱃지 없음',
-                                style: TextStyle(fontSize: 12, color: isEarlyMember ? const Color(0xFFD97706) : AppColors.textSecondary, fontWeight: isEarlyMember ? FontWeight.w600 : FontWeight.normal),
-                              ),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
                   ),
-                  if (isEarlyMember)
-                    Container(
-                      margin: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                      padding: const EdgeInsets.all(18),
-                      decoration: BoxDecoration(color: const Color(0xFFFFFBEB), borderRadius: BorderRadius.circular(18), border: Border.all(color: const Color(0xFFFCD34D))),
-                      child: Row(
-                        children: [
-                          const Text('🏅', style: TextStyle(fontSize: 40)),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('초기멤버 뱃지', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700, color: Color(0xFFD97706))),
-                                Text('당맷치 초기 1,000명 안에 가입한 특별한 멤버예요!\n가입 순번 #${user.joinOrder}', style: const TextStyle(fontSize: 13, color: Color(0xFF92400E), height: 1.4)),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   _menuSection(context, '나의 기록', [
                     _MenuItem(icon: '🍽️', label: '나의 선택 기록', onTap: () => context.push('/my-selections')),
                   ]),

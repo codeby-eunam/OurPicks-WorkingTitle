@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -19,7 +18,6 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
   List<UserLogEntry> _logs = [];
   bool _loading = true;
   bool _error = false;
-  String? _toast;
 
   @override
   void initState() {
@@ -42,13 +40,6 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
     } finally {
       if (mounted) setState(() => _loading = false);
     }
-  }
-
-  void _showToast(String message) {
-    setState(() => _toast = message);
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) setState(() => _toast = null);
-    });
   }
 
   String _formatDate(DateTime date) => DateFormat('yyyy.MM.dd').format(date);
@@ -108,19 +99,6 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                 ),
               ],
             ),
-          if (_toast != null)
-            Positioned(
-              bottom: 40,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.75), borderRadius: BorderRadius.circular(20)),
-                  child: Text(_toast!, style: const TextStyle(color: Colors.white)),
-                ),
-              ),
-            ),
         ],
       ),
     );
@@ -129,28 +107,11 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
   Widget _buildRow(UserLogEntry item) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(_formatDate(item.selectedAtDate), style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                Text(item.restaurantName, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF374151))),
-              ],
-            ),
-          ),
-          if (item.reviewed)
-            OutlinedButton(
-              onPressed: () => _showToast('영수증 출력 기능은 곧 출시 예정이에요!'),
-              child: const Text('🧾 영수증'),
-            )
-          else
-            OutlinedButton(
-              onPressed: () => context.push('/review', extra: {'restaurantId': item.restaurantId, 'restaurantName': item.restaurantName}),
-              style: OutlinedButton.styleFrom(foregroundColor: AppColors.primary, side: const BorderSide(color: AppColors.primary, width: 1.5)),
-              child: const Text('리뷰쓰기'),
-            ),
+          Text(_formatDate(item.selectedAtDate), style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
+          Text(item.restaurantName, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF374151))),
         ],
       ),
     );

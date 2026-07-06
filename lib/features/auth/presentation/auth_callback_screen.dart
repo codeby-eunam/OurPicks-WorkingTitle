@@ -43,7 +43,6 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
           '/setup-profile',
           extra: {
             'kakaoId': result.kakaoId,
-            'profileImage': result.profileImage ?? '',
             'provider': result.provider.name,
           },
         );

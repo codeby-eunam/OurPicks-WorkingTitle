@@ -15,11 +15,8 @@ import '../../features/library/presentation/library_tab_screen.dart';
 import '../../features/library/presentation/share_detail_screen.dart';
 import '../../features/map/presentation/map_screen.dart';
 import '../../features/my_selections/presentation/my_selections_screen.dart';
-import '../../features/my_selections/presentation/receipt_screen.dart';
-import '../../features/my_selections/presentation/review_screen.dart';
 import '../../features/profile/presentation/profile_tab_screen.dart';
 import '../../features/search/presentation/search_tab_screen.dart';
-import '../../features/settings/presentation/notification_settings_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../shared/models/restaurant.dart';
 import 'app_shell.dart';
@@ -68,7 +65,6 @@ final appRouter = GoRouter(
         final extra = (state.extra as Map?) ?? const {};
         return SetupProfileScreen(
           kakaoId: extra['kakaoId']?.toString() ?? '',
-          profileImage: extra['profileImage']?.toString() ?? '',
           provider: extra['provider']?.toString() ?? 'kakao',
         );
       },
@@ -136,24 +132,6 @@ final appRouter = GoRouter(
       builder: (context, state) => ShareDetailScreen(shareToken: state.pathParameters['shareToken']!),
     ),
     GoRoute(path: '/my-selections', builder: (context, state) => const MySelectionsScreen()),
-    GoRoute(
-      path: '/review',
-      builder: (context, state) {
-        final extra = (state.extra as Map?) ?? const {};
-        return ReviewScreen(
-          restaurantId: extra['restaurantId']?.toString() ?? '',
-          restaurantName: extra['restaurantName']?.toString(),
-        );
-      },
-    ),
-    GoRoute(
-      path: '/receipt',
-      builder: (context, state) {
-        final extra = (state.extra as Map?) ?? const {};
-        return ReceiptScreen(restaurantName: extra['restaurantName']?.toString());
-      },
-    ),
     GoRoute(path: '/settings', builder: (context, state) => const SettingsScreen()),
-    GoRoute(path: '/notification-settings', builder: (context, state) => const NotificationSettingsScreen()),
   ],
 );

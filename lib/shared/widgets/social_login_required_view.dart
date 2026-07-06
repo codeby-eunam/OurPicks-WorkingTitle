@@ -36,7 +36,6 @@ class _SocialLoginRequiredViewState extends ConsumerState<SocialLoginRequiredVie
           '/setup-profile',
           extra: {
             'kakaoId': result.kakaoId,
-            'profileImage': result.profileImage ?? '',
             'provider': result.provider.name,
           },
         );

@@ -81,20 +81,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 96, height: 96,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFFF0EB),
-                            shape: BoxShape.circle,
-                            border: Border.all(color: AppColors.primary, width: 3),
-                          ),
-                          child: const Center(child: Text('🐻', style: TextStyle(fontSize: 48))),
-                        ),
-                        const SizedBox(height: 10),
-                        const Text('프로필 사진 변경 (준비 중)', style: TextStyle(fontSize: 13, color: AppColors.textSecondary)),
-                      ],
+                    child: Container(
+                      width: 96, height: 96,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF0EB),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.primary, width: 3),
+                      ),
+                      child: const Center(child: Text('🐻', style: TextStyle(fontSize: 48))),
                     ),
                   ),
                   const SizedBox(height: 36),

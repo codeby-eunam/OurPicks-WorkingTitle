@@ -16,12 +16,10 @@ class SetupProfileScreen extends ConsumerStatefulWidget {
   const SetupProfileScreen({
     super.key,
     required this.kakaoId,
-    required this.profileImage,
     required this.provider,
   });
 
   final String kakaoId;
-  final String profileImage;
   final String provider;
 
   @override
@@ -96,7 +94,6 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
             nickname: _nicknameController.text.trim(),
             kakaoId: widget.kakaoId,
             provider: AuthProvider.fromName(widget.provider.isEmpty ? 'kakao' : widget.provider),
-            profileImage: widget.profileImage.isEmpty ? null : widget.profileImage,
           );
       if (mounted) context.go('/');
     } catch (err) {

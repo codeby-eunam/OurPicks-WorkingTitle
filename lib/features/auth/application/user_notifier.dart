@@ -78,31 +78,13 @@ class UserNotifier extends Notifier<UserState> {
 
     final isNewUser = params['isNewUser'] == 'true';
     final nickname = params['nickname'] ?? '';
-    final profileImage = (params['profileImage']?.isNotEmpty ?? false) ? params['profileImage'] : null;
     final userId = params['userId'];
-    final joinOrder = int.tryParse(params['joinOrder'] ?? '9999') ?? 9999;
-    final badgesParam = params['badges'] ?? '';
-
-    final badges = <String>[];
-    if (badgesParam.contains('초기멤버') || joinOrder <= 1000) {
-      badges.add('초기멤버');
-    }
 
     if (isNewUser || userId == null || userId.isEmpty) {
       state = state.copyWith(
-        pendingLogin: PendingLogin(
-          kakaoId: socialId,
-          nickname: nickname,
-          profileImage: profileImage,
-          provider: provider,
-        ),
+        pendingLogin: PendingLogin(kakaoId: socialId, nickname: nickname, provider: provider),
       );
-      return OAuthResult(
-        needsSetup: true,
-        kakaoId: socialId,
-        profileImage: profileImage,
-        provider: provider,
-      );
+      return OAuthResult(needsSetup: true, kakaoId: socialId, provider: provider);
     }
 
     final user = AppUser(
@@ -110,9 +92,6 @@ class UserNotifier extends Notifier<UserState> {
       provider: provider,
       userId: userId,
       nickname: nickname,
-      profileImage: profileImage,
-      joinOrder: joinOrder,
-      badges: badges,
       createdAt: params['createdAt'] ?? DateTime.now().toIso8601String(),
     );
     state = state.copyWith(user: user, hasSeenLanding: true);
@@ -152,7 +131,6 @@ class UserNotifier extends Notifier<UserState> {
     required String nickname,
     required String kakaoId,
     required AuthProvider provider,
-    String? profileImage,
   }) async {
     final data = await _api.setupProfile(
       userId: userId,
@@ -161,17 +139,11 @@ class UserNotifier extends Notifier<UserState> {
       provider: provider,
     );
 
-    final joinOrder = (data['joinOrder'] as num?)?.toInt() ?? 9999;
-    final badges = joinOrder <= 1000 ? ['초기멤버'] : <String>[];
-
     final user = AppUser(
       kakaoId: kakaoId,
       provider: provider,
       userId: userId,
       nickname: nickname,
-      profileImage: profileImage,
-      joinOrder: joinOrder,
-      badges: badges,
       createdAt: data['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
     );
 
