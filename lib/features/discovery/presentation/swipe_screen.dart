@@ -11,6 +11,7 @@ import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/widgets/kakao_webview.dart';
 import '../../library/application/library_notifier.dart';
+import 'widgets/decision_timer_chip.dart';
 
 const _kBgTeal = Color(0xFF1E7874);
 const _kOrange = Color(0xFFF57C4A);
@@ -160,10 +161,16 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> with TickerProviderSt
                     children: [
                       IconButton(onPressed: () => context.pop(), icon: const Icon(Icons.chevron_left, color: Colors.white, size: 32)),
                       const Text('Dangmatch', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800, color: Colors.white)),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-                        decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(20)),
-                        child: Text('${_index + 1}/${_restaurants.length}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+                      Row(
+                        children: [
+                          const DecisionTimerChip(light: true),
+                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                            decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.18), borderRadius: BorderRadius.circular(20)),
+                            child: Text('${_index + 1}/${_restaurants.length}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+                          ),
+                        ],
                       ),
                     ],
                   ),

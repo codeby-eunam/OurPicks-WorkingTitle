@@ -10,6 +10,7 @@ import '../../../shared/models/restaurant.dart';
 import '../../../shared/services/restaurant_api.dart';
 import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
+import '../../discovery/application/decision_session.dart';
 import '../application/library_notifier.dart';
 
 String _normalizeUid(String? uid) => (uid ?? '').replaceFirst('kakao:', '');
@@ -58,14 +59,20 @@ class LibraryDetailScreen extends ConsumerWidget {
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
-                        onPressed: () => context.push('/swipe', extra: {'restaurants': list.places.map(_placeToRestaurant).toList(), 'locationName': list.title}),
+                        onPressed: () {
+                          DecisionSessionService.instance.begin();
+                          context.push('/swipe', extra: {'restaurants': list.places.map(_placeToRestaurant).toList(), 'locationName': list.title});
+                        },
                         style: ElevatedButton.styleFrom(backgroundColor: AppColors.secondary),
                         icon: const Icon(Icons.swipe, size: 14, color: Colors.white),
                         label: const Text('Swipe', style: TextStyle(fontSize: 13, color: Colors.white)),
                       ),
                       const SizedBox(width: 8),
                       ElevatedButton.icon(
-                        onPressed: () => context.push('/tournament', extra: {'restaurants': list.places.map(_placeToRestaurant).toList()}),
+                        onPressed: () {
+                          DecisionSessionService.instance.begin();
+                          context.push('/tournament', extra: {'restaurants': list.places.map(_placeToRestaurant).toList()});
+                        },
                         icon: const Text('🏆', style: TextStyle(fontSize: 13)),
                         label: const Text('Tournament', style: TextStyle(fontSize: 13, color: Colors.white)),
                       ),

@@ -9,6 +9,7 @@ import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/services/restaurant_badge.dart';
 import '../../../shared/widgets/kakao_webview.dart';
+import 'widgets/decision_timer_chip.dart';
 
 class _MatchSnapshot {
   _MatchSnapshot(this.bracket, this.matchIdx, this.roundWinners, this.round);
@@ -176,7 +177,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
                 children: [
                   IconButton(onPressed: _handleGoBack, icon: const Icon(Icons.chevron_left, size: 26)),
                   Text('${_getRoundName()}  ${_matchIdx + 1} / $_totalMatches', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                  const SizedBox(width: 26),
+                  const DecisionTimerChip(),
                 ],
               ),
             ),

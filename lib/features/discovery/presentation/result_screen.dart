@@ -14,6 +14,7 @@ import '../../../shared/services/restaurant_badge.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
+import '../application/decision_session.dart';
 
 String _buildMapUrl(Restaurant r) {
   if (r.naverUrl != null && r.naverUrl!.isNotEmpty) {
@@ -43,6 +44,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 4));
     _confettiController.play();
+    DecisionSessionService.instance.end();
     _loadWinCount();
     WidgetsBinding.instance.addPostFrameCallback((_) => _logSelection());
   }

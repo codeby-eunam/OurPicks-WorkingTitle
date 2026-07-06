@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/services/restaurant_api.dart';
 import '../../../shared/widgets/floating_contact_button.dart';
+import '../application/decision_session.dart';
 import '../domain/category_map.dart';
 
 /// Port of app/mode-select.tsx: fetches nearby restaurants for the selected
@@ -86,6 +87,7 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
         return;
       }
 
+      DecisionSessionService.instance.begin();
       final extra = {'restaurants': restaurants, 'locationName': widget.locationName};
       if (restaurants.length > kSwipeThreshold) {
         context.pushReplacement('/swipe', extra: extra);
