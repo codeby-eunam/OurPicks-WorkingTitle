@@ -19,7 +19,13 @@ class LibraryNotifier extends Notifier<LibraryState> {
   LibraryState build() {
     ref.listen<String?>(
       userProvider.select((s) => s.user?.kakaoId),
-      (previous, next) => _onUidChanged(next),
+      // Deferred to a microtask: fireImmediately invokes this synchronously
+      // during build(), and if userProvider's kakaoId is already non-null at
+      // that point (e.g. navigating straight to a list detail screen without
+      // visiting the library tab first), reading `state` before build()
+      // returns throws "Tried to read the state of an uninitialized
+      // provider." Scheduling avoids the self-read race entirely.
+      (previous, next) => Future.microtask(() => _onUidChanged(next)),
       fireImmediately: true,
     );
     ref.onDispose(() {

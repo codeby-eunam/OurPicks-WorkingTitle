@@ -37,11 +37,22 @@ class LibraryDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final lists = ref.watch(libraryProvider).lists;
+    final libraryState = ref.watch(libraryProvider);
+    final lists = libraryState.lists;
     final list = lists.where((l) => l.id == listId).firstOrNull;
     final user = ref.watch(userProvider).user;
 
     if (list == null) {
+      // Lists may still be fetching (e.g. reached here directly from the
+      // explore tab without visiting 내 보관함 first) — don't flash "not
+      // found" while libraryProvider is still loading.
+      if (libraryState.loading) {
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
+        );
+      }
       return Scaffold(
         appBar: AppBar(),
         body: const Center(child: Text('보관함을 찾을 수 없어요.')),

@@ -37,6 +37,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
   ListItem? _list;
   bool _loading = true;
   bool _error = false;
+  bool _redirected = false;
 
   @override
   void initState() {
@@ -50,9 +51,17 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
       if (!mounted) return;
       if (list == null) {
         setState(() => _error = true);
-      } else {
-        setState(() => _list = list);
+        return;
       }
+      final user = ref.read(userProvider).user;
+      if (user != null && list.ownerUid == user.kakaoId) {
+        // Owner viewing their own public list: go straight to the editable
+        // library detail page instead of this read-only share view.
+        _redirected = true;
+        context.pushReplacement('/library-detail', extra: {'listId': list.id});
+        return;
+      }
+      setState(() => _list = list);
     } catch (_) {
       if (mounted) setState(() => _error = true);
     } finally {
@@ -62,7 +71,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
+    if (_loading || _redirected) {
       return const Scaffold(
         body: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
@@ -97,8 +106,6 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
     }
 
     final list = _list!;
-    final user = ref.watch(userProvider).user;
-    final isOwner = user != null && list.ownerUid == user.kakaoId;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -116,31 +123,13 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                   const Spacer(),
                   OutlinedButton.icon(
                     onPressed: () => _handleShare(list),
+                    style: OutlinedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                    ),
                     icon: const Icon(Icons.ios_share, size: 14),
                     label: const Text('공유하기', style: TextStyle(fontSize: 13)),
                   ),
-                  const SizedBox(width: 8),
-                  if (isOwner) ...[
-                    ElevatedButton.icon(
-                      onPressed: () => context.push(
-                        '/library-detail',
-                        extra: {'listId': list.id},
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.secondary,
-                      ),
-                      icon: const Icon(
-                        Icons.edit,
-                        size: 14,
-                        color: Colors.white,
-                      ),
-                      label: const Text(
-                        '편집',
-                        style: TextStyle(fontSize: 13, color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                  ],
+                  const SizedBox(width: 4),
                   ElevatedButton.icon(
                     onPressed: () => context.push(
                       '/swipe',
@@ -153,6 +142,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.secondary,
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
                     ),
                     icon: const Icon(
                       Icons.swipe,
@@ -164,7 +154,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                       style: TextStyle(fontSize: 13, color: Colors.white),
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 4),
                   ElevatedButton.icon(
                     onPressed: () => context.push(
                       '/tournament',
@@ -173,6 +163,9 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                             .map(_placeToRestaurant)
                             .toList(),
                       },
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
                     ),
                     icon: const Text('🏆', style: TextStyle(fontSize: 13)),
                     label: const Text(
@@ -208,9 +201,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                isOwner
-                                    ? '나의 찜 리스트'
-                                    : '${list.ownerUserId ?? '누군가'}의 찜 리스트',
+                                '${list.ownerUserId ?? '누군가'}의 찜 리스트',
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
