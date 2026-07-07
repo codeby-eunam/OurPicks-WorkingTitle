@@ -66,7 +66,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                         ),
                       ),
                       const SizedBox(height: 4),
-                      const Text(
+                      Text(
                         '다른 사람들이 공유한 맛집 리스트',
                         style: TextStyle(
                           fontSize: 13,
@@ -106,7 +106,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                     child: Column(
                       children: [
                         if (_publicLists.isEmpty)
-                          const Padding(
+                          Padding(
                             padding: EdgeInsets.symmetric(vertical: 60),
                             child: Column(
                               children: [
@@ -132,7 +132,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                             ),
                           )
                         else if (filtered.isEmpty)
-                          const Padding(
+                          Padding(
                             padding: EdgeInsets.symmetric(vertical: 60),
                             child: Column(
                               children: [
@@ -164,7 +164,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 Container(
                                   width: 8,
                                   height: 8,
-                                  decoration: const BoxDecoration(
+                                  decoration: BoxDecoration(
                                     color: AppColors.secondary,
                                     shape: BoxShape.circle,
                                   ),
@@ -214,7 +214,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                   color: Colors.white,
                                   shape: BoxShape.circle,
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.public,
                                   color: AppColors.secondary,
                                 ),
@@ -349,7 +349,7 @@ class _PublicListCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         '가게 ${item.count}개',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,
                         ),

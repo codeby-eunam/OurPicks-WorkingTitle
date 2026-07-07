@@ -52,7 +52,7 @@ class _LanguagePickerScreenState extends ConsumerState<LanguagePickerScreen> {
               const SizedBox(height: 8),
               Text(
                 t.chooseLanguageSubtitle,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   color: AppColors.textSecondary,
                 ),
@@ -128,9 +128,9 @@ class _LanguageOption extends StatelessWidget {
               ),
             ),
             if (selected)
-              const Icon(Icons.check_circle, color: AppColors.primary, size: 22)
+              Icon(Icons.check_circle, color: AppColors.primary, size: 22)
             else
-              const Icon(Icons.circle_outlined, color: AppColors.border, size: 22),
+              Icon(Icons.circle_outlined, color: AppColors.border, size: 22),
           ],
         ),
       ),

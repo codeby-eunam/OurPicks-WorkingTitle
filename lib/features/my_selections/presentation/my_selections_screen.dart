@@ -58,7 +58,7 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
       body: Stack(
         children: [
           if (_loading)
-            const Center(
+            Center(
               child: CircularProgressIndicator(color: AppColors.primary),
             )
           else if (_error)
@@ -66,7 +66,7 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
+                  Text(
                     '불러오는 중 오류가 발생했어요.',
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
@@ -76,7 +76,7 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
               ),
             )
           else if (_logs.isEmpty)
-            const Center(
+            Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -129,7 +129,7 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
   Widget _buildSectionHeader(String title, int count) {
     return Text(
       '$title · $count개',
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,
         color: AppColors.textSecondary,
@@ -163,7 +163,7 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
         children: [
           Text(
             _formatDate(item.selectedAtDate),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 11,
               color: AppColors.textSecondary,
             ),

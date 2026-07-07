@@ -19,7 +19,7 @@ class DecisionProgressFunnel extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           '오늘의 선택 과정',
           style: TextStyle(
             fontSize: 13,
@@ -62,7 +62,7 @@ class _FunnelRow extends StatelessWidget {
             stage.label,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 12, color: AppColors.textMuted),
+            style: TextStyle(fontSize: 12, color: AppColors.textMuted),
           ),
         ),
         const SizedBox(width: 8),

@@ -15,21 +15,22 @@ class AppTypography {
 
   static TextStyle heading(
     double fontSize, {
-    Color color = AppColors.textPrimary,
+    Color? color,
     FontWeight weight = emphasis,
   }) {
     return TextStyle(
       fontSize: fontSize,
       fontWeight: weight,
       letterSpacing: headingLetterSpacing(fontSize),
-      color: color,
+      color: color ?? AppColors.textPrimary,
     );
   }
 
-  static TextStyle bodyStyle(
-    double fontSize, {
-    Color color = AppColors.textPrimary,
-  }) {
-    return TextStyle(fontSize: fontSize, fontWeight: body, color: color);
+  static TextStyle bodyStyle(double fontSize, {Color? color}) {
+    return TextStyle(
+      fontSize: fontSize,
+      fontWeight: body,
+      color: color ?? AppColors.textPrimary,
+    );
   }
 }

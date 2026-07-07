@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/place.dart';
 import '../../../shared/models/restaurant.dart';
@@ -17,7 +18,6 @@ import '../application/decision_resume.dart';
 import '../application/decision_session.dart';
 import 'widgets/decision_timer_chip.dart';
 
-const _kBgTeal = Color(0xFF1E7874);
 const _kOrange = Color(0xFFF57C4A);
 
 Place _toPlace(Restaurant r) {
@@ -105,7 +105,7 @@ class _SwipeCardState extends State<_SwipeCard> {
           Expanded(
             flex: 3,
             child: Container(
-              color: _kBgTeal.withValues(alpha: 0.08),
+              color: AppColors.primary.withValues(alpha: 0.08),
               alignment: Alignment.center,
               child: photoUrl.isNotEmpty
                   ? Image.network(
@@ -420,7 +420,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     final t = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: _kBgTeal,
+      backgroundColor: AppColors.primary,
       body: SafeArea(
         child: Stack(
           children: [
@@ -661,7 +661,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     } else {
       cta = _ctaButton(
         t.swipeStartTournamentWithCount(_liked.length),
-        _kBgTeal,
+        AppColors.primary,
         Colors.white,
         () => _goToResult(_liked),
       );
@@ -749,7 +749,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                               children: [
                                 CircleAvatar(
                                   radius: 12,
-                                  backgroundColor: _kBgTeal,
+                                  backgroundColor: AppColors.primary,
                                   child: Text(
                                     '${i + 1}',
                                     style: const TextStyle(

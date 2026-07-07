@@ -369,7 +369,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 Text(
                   '후보 ${session.restaurants.length}곳 남음',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
                   ),
@@ -400,7 +400,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.location_on, size: 18, color: AppColors.primary),
+          Icon(Icons.location_on, size: 18, color: AppColors.primary),
           Expanded(
             child: GestureDetector(
               onTap: () => setState(() => _searchVisible = true),
@@ -421,7 +421,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           IconButton(
             onPressed: _locating ? null : _handleCurrentLocation,
             icon: _locating
-                ? const SizedBox(
+                ? SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
@@ -562,8 +562,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   _handleCurrentLocation();
                   _closeModal();
                 },
-                child: const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                   child: Row(
                     children: [
                       Icon(
@@ -571,7 +571,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         size: 20,
                         color: AppColors.primary,
                       ),
-                      SizedBox(width: 10),
+                      const SizedBox(width: 10),
                       Text(
                         '현재 위치 사용',
                         style: TextStyle(
@@ -587,7 +587,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const Divider(height: 1),
               Expanded(
                 child: _searching
-                    ? const Center(
+                    ? Center(
                         child: CircularProgressIndicator(
                           color: AppColors.primary,
                         ),
@@ -605,7 +605,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Widget _buildResultsList() {
     if (_searchResults.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           '검색 결과가 없습니다.',
           style: TextStyle(color: AppColors.textSecondary),
@@ -643,7 +643,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
+                Text(
                   '최근 검색',
                   style: TextStyle(
                     fontSize: 12,
@@ -659,8 +659,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
         if (_recentSearches.isEmpty)
-          const Padding(
-            padding: EdgeInsets.only(top: 40),
+          Padding(
+            padding: const EdgeInsets.only(top: 40),
             child: Center(
               child: Text(
                 '최근 검색 기록이 없습니다.',

@@ -61,7 +61,7 @@ class _ChoiceConfidenceSheetState extends State<ChoiceConfidenceSheet> {
                 style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
               ),
               const SizedBox(height: 4),
-              const Text(
+              Text(
                 '다음에 더 좋은 추천을 위해 알려주세요',
                 style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
               ),
@@ -116,7 +116,7 @@ class _OptionButton extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               option.label,
-              style: const TextStyle(fontSize: 11, color: AppColors.textMuted),
+              style: TextStyle(fontSize: 11, color: AppColors.textMuted),
             ),
           ],
         ),

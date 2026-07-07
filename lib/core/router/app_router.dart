@@ -19,6 +19,7 @@ import '../../features/profile/presentation/profile_tab_screen.dart';
 import '../../features/search/presentation/search_tab_screen.dart';
 import '../../features/settings/presentation/language_picker_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
+import '../../features/settings/presentation/theme_picker_screen.dart';
 import '../../shared/models/restaurant.dart';
 import 'app_shell.dart';
 
@@ -173,6 +174,10 @@ final appRouter = GoRouter(
         final isInitialPick = state.uri.queryParameters['initial'] != 'false';
         return LanguagePickerScreen(isInitialPick: isInitialPick);
       },
+    ),
+    GoRoute(
+      path: '/theme-picker',
+      builder: (context, state) => const ThemePickerScreen(),
     ),
   ],
 );

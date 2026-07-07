@@ -149,7 +149,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                   color: const Color(0xFFFFF0EB),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: const Text(
+                child: Text(
                   '프로필 설정',
                   style: TextStyle(
                     fontSize: 13,
@@ -159,7 +159,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                 ),
               ),
               const SizedBox(height: 14),
-              const Text(
+              Text(
                 '당맷치에서 사용할\n아이디와 닉네임을 만들어요',
                 style: TextStyle(
                   fontSize: 26,
@@ -169,7 +169,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 '아이디는 한 번 설정하면 변경이 어려워요',
                 style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
               ),
@@ -197,8 +197,8 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                   ),
                 )
               else
-                const Padding(
-                  padding: EdgeInsets.only(top: 6),
+                Padding(
+                  padding: const EdgeInsets.only(top: 6),
                   child: Text(
                     '@로 시작 · 영문/숫자/. /_ 사용 가능 · 2~20자',
                     style: TextStyle(
@@ -267,7 +267,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
           fontWeight: FontWeight.w600,
           color: Color(0xFF374151),
         ),
-        children: const [
+        children: [
           TextSpan(
             text: ' *',
             style: TextStyle(color: AppColors.primary),
@@ -313,7 +313,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             '미리보기',
             style: TextStyle(
               fontSize: 12,
@@ -344,7 +344,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                     _nicknameController.text.trim().isEmpty
                         ? '닉네임'
                         : _nicknameController.text.trim(),
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
@@ -354,7 +354,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
                     _userIdController.text.length > 1
                         ? _userIdController.text
                         : '@아이디',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 13,
                       color: AppColors.textSecondary,
                     ),

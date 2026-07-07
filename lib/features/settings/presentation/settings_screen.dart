@@ -7,6 +7,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../auth/application/user_notifier.dart';
 import '../application/locale_notifier.dart';
+import '../application/theme_notifier.dart';
+import '../../../core/theme/app_palette.dart';
 
 /// 개인 설정 화면 골격. RN에는 아직 없는 신규 화면 — 프로필/앱 설정 카테고리
 /// 구조만 우선 잡고, 각 항목의 실제 동작(테마 전환, 캐시 삭제 등)은 추후 작업.
@@ -17,10 +19,12 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(userProvider).user;
     final locale = ref.watch(localeProvider.select((s) => s.locale));
+    final paletteId = ref.watch(themeProvider.select((s) => s.paletteId));
     final t = AppLocalizations.of(context)!;
     final languageValue = locale.languageCode == 'ko'
         ? t.languageKorean
         : t.languageEnglish;
+    final themeValue = AppPalettes.byId(paletteId).labelKo;
 
     return Scaffold(
       appBar: AppBar(title: Text(t.settingsTitle)),
@@ -71,8 +75,8 @@ class SettingsScreen extends ConsumerWidget {
               _SettingsTile(
                 icon: Icons.palette_outlined,
                 label: t.settingsThemeLabel,
-                trailingText: t.settingsThemeValue,
-                onTap: null,
+                trailingText: themeValue,
+                onTap: () => context.push('/theme-picker'),
               ),
               const Divider(height: 1, indent: 54),
               _SettingsTile(
@@ -103,7 +107,7 @@ class _SectionHeader extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       child: Text(
         title.toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.w700,
           color: AppColors.textSecondary,
@@ -165,7 +169,7 @@ class _SettingsTile extends StatelessWidget {
       trailing: trailingText != null
           ? Text(
               trailingText!,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,
               ),
@@ -196,7 +200,7 @@ class _AppVersionTile extends StatelessWidget {
           ),
           trailing: Text(
             version,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 13,
               color: AppColors.textSecondary,
             ),
