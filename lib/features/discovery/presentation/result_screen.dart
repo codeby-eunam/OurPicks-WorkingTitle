@@ -12,14 +12,20 @@ import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_badge.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
-import '../../../shared/widgets/floating_contact_button.dart';
 import '../../auth/application/user_notifier.dart';
+import '../application/decision_session.dart';
+import 'widgets/choice_confidence_sheet.dart';
+import 'widgets/decision_progress_funnel.dart';
 
 String _buildMapUrl(Restaurant r) {
   if (r.naverUrl != null && r.naverUrl!.isNotEmpty) {
-    return r.naverUrl!.replaceFirst(RegExp('^http://', caseSensitive: false), 'https://');
+    return r.naverUrl!.replaceFirst(
+      RegExp('^http://', caseSensitive: false),
+      'https://',
+    );
   }
-  final query = '${r.placeName} ${r.roadAddressName.isNotEmpty ? r.roadAddressName : r.addressName}';
+  final query =
+      '${r.placeName} ${r.roadAddressName.isNotEmpty ? r.roadAddressName : r.addressName}';
   return 'https://search.naver.com/search.naver?query=${Uri.encodeComponent(query)}';
 }
 
@@ -33,18 +39,49 @@ class ResultScreen extends ConsumerStatefulWidget {
   ConsumerState<ResultScreen> createState() => _ResultScreenState();
 }
 
+String _formatElapsed(Duration d) {
+  final minutes = d.inMinutes;
+  final seconds = d.inSeconds % 60;
+  if (minutes > 0) return '$minutes분 $seconds초';
+  return '$seconds초';
+}
+
 class _ResultScreenState extends ConsumerState<ResultScreen> {
   late final ConfettiController _confettiController;
+  late final List<FunnelStage> _funnelStages;
+  late final Duration? _elapsed;
   int? _winCount;
   bool _logged = false;
 
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 4));
+    _funnelStages = DecisionSessionService.instance.stages;
+    _confettiController = ConfettiController(
+      duration: const Duration(seconds: 4),
+    );
     _confettiController.play();
+    _elapsed = DecisionSessionService.instance.end();
     _loadWinCount();
     WidgetsBinding.instance.addPostFrameCallback((_) => _logSelection());
+    Future.delayed(const Duration(milliseconds: 900), _showConfidenceSheet);
+  }
+
+  void _showConfidenceSheet() {
+    if (!mounted) return;
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) => ChoiceConfidenceSheet(
+        onSelected: (level) => AnalyticsService.instance.logChoiceConfidence(
+          widget.winner.id,
+          level,
+          userId: ref.read(userProvider).user?.userId,
+        ),
+      ),
+    );
   }
 
   @override
@@ -54,7 +91,9 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
   }
 
   Future<void> _loadWinCount() async {
-    final map = await RestaurantStatsService.instance.getWinCounts([widget.winner.id]);
+    final map = await RestaurantStatsService.instance.getWinCounts([
+      widget.winner.id,
+    ]);
     if (mounted) setState(() => _winCount = map[widget.winner.id]);
   }
 
@@ -64,21 +103,30 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     final category = categoryLabelFor(widget.winner.categoryName);
 
     AnalyticsService.instance.logRestaurantSelected(
-      widget.winner.id, widget.winner.placeName, category, 'random', '',
+      widget.winner.id,
+      widget.winner.placeName,
+      category,
+      'random',
+      '',
       userId: userState.user?.userId,
     );
 
     if (userState.isLoggedIn && userState.user != null) {
       _logged = true;
       try {
-        final response = await ApiClient.instance.dio.post('/api/userlog', data: {
-          'userId': userState.user!.kakaoId,
-          'restaurantId': widget.winner.id,
-          'restaurantName': widget.winner.placeName,
-        });
-        debugPrint(response.data['skipped'] == true
-            ? '[userlog] 오늘 이미 선택한 맛집, 저장 건너뜀 ⏭️ ${widget.winner.placeName}'
-            : '[userlog] 저장 완료 ✅ ${widget.winner.placeName}');
+        final response = await ApiClient.instance.dio.post(
+          '/api/userlog',
+          data: {
+            'userId': userState.user!.kakaoId,
+            'restaurantId': widget.winner.id,
+            'restaurantName': widget.winner.placeName,
+          },
+        );
+        debugPrint(
+          response.data['skipped'] == true
+              ? '[userlog] 오늘 이미 선택한 맛집, 저장 건너뜀 ⏭️ ${widget.winner.placeName}'
+              : '[userlog] 저장 완료 ✅ ${widget.winner.placeName}',
+        );
       } catch (e) {
         debugPrint('[userlog] 저장 실패 ❌ $e');
       }
@@ -89,11 +137,16 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
     final r = widget.winner;
     try {
       await SharePlus.instance.share(
-        ShareParams(text: '오늘의 맛집: ${r.placeName}\n${r.roadAddressName.isNotEmpty ? r.roadAddressName : r.addressName}\n${r.placeUrl}'),
+        ShareParams(
+          text:
+              '오늘의 맛집: ${r.placeName}\n${r.roadAddressName.isNotEmpty ? r.roadAddressName : r.addressName}\n${r.placeUrl}',
+        ),
       );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('공유하는 중 오류가 발생했습니다.')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('공유하는 중 오류가 발생했습니다.')));
       }
     }
   }
@@ -110,19 +163,36 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
         child: Stack(
           children: [
             SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20).copyWith(bottom: 40),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ).copyWith(bottom: 40),
               child: Column(
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: OutlinedButton(onPressed: () => context.go('/'), child: const Text('다시하기')),
+                    child: OutlinedButton(
+                      onPressed: () => context.go('/'),
+                      child: const Text('다시하기'),
+                    ),
                   ),
-                  const Text('오늘의 우승!', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: AppColors.primary)),
+                  const Text(
+                    '오늘의 우승!',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.primary,
+                    ),
+                  ),
                   const SizedBox(height: 6),
                   const Text(
                     '당신의 완벽한\n한 끼를 찾았어요.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF1a2a4a), height: 1.35),
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: Color(0xFF1a2a4a),
+                      height: 1.35,
+                    ),
                   ),
                   const SizedBox(height: 8),
                   Container(
@@ -132,7 +202,6 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                     decoration: BoxDecoration(
                       color: AppColors.gold,
                       shape: BoxShape.circle,
-                      boxShadow: [BoxShadow(color: AppColors.gold.withValues(alpha: 0.5), blurRadius: 12, offset: const Offset(0, 4))],
                     ),
                     child: const Text('👑', style: TextStyle(fontSize: 26)),
                   ),
@@ -142,8 +211,8 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       constraints: const BoxConstraints(maxWidth: 360),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.12), blurRadius: 24, offset: const Offset(0, 8))],
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border, width: 0.5),
                       ),
                       clipBehavior: Clip.antiAlias,
                       child: Column(
@@ -156,10 +225,27 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Text('WINNER', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white, letterSpacing: 4)),
-                                Text(categoryLabel, style: const TextStyle(fontSize: 13, color: Colors.white70)),
+                                const Text(
+                                  'WINNER',
+                                  style: TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: 4,
+                                  ),
+                                ),
+                                Text(
+                                  categoryLabel,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: Colors.white70,
+                                  ),
+                                ),
                                 const SizedBox(height: 6),
-                                const Text('🏆', style: TextStyle(fontSize: 40)),
+                                const Text(
+                                  '🏆',
+                                  style: TextStyle(fontSize: 40),
+                                ),
                               ],
                             ),
                           ),
@@ -168,15 +254,37 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(winCountBadge(_winCount), style: const TextStyle(fontSize: 13, color: AppColors.primary, fontWeight: FontWeight.w600)),
-                                const SizedBox(height: 4),
-                                Text(r.placeName, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Color(0xFF1a2a4a))),
+                                Text(
+                                  winCountBadge(_winCount),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  r.roadAddressName.isNotEmpty ? r.roadAddressName : (r.addressName.isNotEmpty ? r.addressName : '오늘 당신을 위한 최고의 선택입니다.'),
+                                  r.placeName,
+                                  style: const TextStyle(
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w900,
+                                    color: Color(0xFF1a2a4a),
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  r.roadAddressName.isNotEmpty
+                                      ? r.roadAddressName
+                                      : (r.addressName.isNotEmpty
+                                            ? r.addressName
+                                            : '오늘 당신을 위한 최고의 선택입니다.'),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(fontSize: 13, color: AppColors.textSecondary, height: 1.4),
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    color: AppColors.textSecondary,
+                                    height: 1.4,
+                                  ),
                                 ),
                               ],
                             ),
@@ -185,6 +293,49 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       ),
                     ),
                   ),
+                  if (_funnelStages.length >= 2)
+                    Container(
+                      constraints: const BoxConstraints(maxWidth: 360),
+                      margin: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.border, width: 0.5),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (_elapsed != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: Text.rich(
+                                TextSpan(
+                                  style: const TextStyle(fontSize: 15),
+                                  children: [
+                                    TextSpan(
+                                      text:
+                                          '${_funnelStages.first.count}개 후보 → ',
+                                      style: const TextStyle(
+                                        color: AppColors.textSecondary,
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text:
+                                          '${_formatElapsed(_elapsed)} 만에 결정',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          DecisionProgressFunnel(stages: _funnelStages),
+                        ],
+                      ),
+                    ),
                   ConstrainedBox(
                     constraints: const BoxConstraints(maxWidth: 360),
                     child: Column(
@@ -192,8 +343,13 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () => launchUrl(Uri.parse(mapUrl), mode: LaunchMode.externalApplication),
-                            style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                            onPressed: () => launchUrl(
+                              Uri.parse(mapUrl),
+                              mode: LaunchMode.externalApplication,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
                             child: const Text('지도 보기 (Go Eat) 🗺️'),
                           ),
                         ),
@@ -202,18 +358,25 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                           width: double.infinity,
                           child: OutlinedButton(
                             onPressed: _handleShare,
-                            style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 14)),
+                            style: OutlinedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                            ),
                             child: const Text('공유하기 (Share)'),
                           ),
                         ),
-                        TextButton(onPressed: () => context.go('/'), child: const Text('홈으로', style: TextStyle(color: AppColors.textSecondary))),
+                        TextButton(
+                          onPressed: () => context.go('/'),
+                          child: const Text(
+                            '홈으로',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        ),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            const FloatingContactButton(),
             Align(
               alignment: Alignment.topCenter,
               child: ConfettiWidget(
@@ -222,7 +385,14 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 shouldLoop: false,
                 numberOfParticles: 40,
                 gravity: 0.25,
-                colors: const [Color(0xFFFF7F50), Color(0xFFF4D125), AppColors.gold, Color(0xFFFF4500), Colors.white, AppColors.primary],
+                colors: const [
+                  Color(0xFFFF7F50),
+                  Color(0xFFF4D125),
+                  AppColors.gold,
+                  Color(0xFFFF4500),
+                  Colors.white,
+                  AppColors.primary,
+                ],
               ),
             ),
           ],

@@ -27,7 +27,10 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
 
   Future<void> _process() async {
     final params = widget.queryParams;
-    final hasSocialId = params['kakaoId'] != null || params['naverId'] != null || params['googleId'] != null;
+    final hasSocialId =
+        params['kakaoId'] != null ||
+        params['naverId'] != null ||
+        params['googleId'] != null;
     if (!hasSocialId && params['error'] == null) return;
 
     try {
@@ -41,11 +44,7 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
       if (result.needsSetup) {
         context.replace(
           '/setup-profile',
-          extra: {
-            'kakaoId': result.kakaoId,
-            'profileImage': result.profileImage ?? '',
-            'provider': result.provider.name,
-          },
+          extra: {'kakaoId': result.kakaoId, 'provider': result.provider.name},
         );
       } else {
         context.go('/');

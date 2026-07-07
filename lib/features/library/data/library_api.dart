@@ -24,7 +24,8 @@ class LibraryApi {
   /// GET /api/lists/public — 탐색 탭용 공개 보관함 목록.
   Future<List<ListItem>> fetchPublicLists() async {
     final response = await _client.dio.get('/api/lists/public');
-    final lists = (response.data['lists'] as List? ?? []).cast<Map<String, dynamic>>();
+    final lists = (response.data['lists'] as List? ?? [])
+        .cast<Map<String, dynamic>>();
     return lists.map(ListItem.fromServerJson).toList();
   }
 
@@ -37,8 +38,12 @@ class LibraryApi {
   }
 
   Future<List<ListItem>> fetchLists(String uid) async {
-    final response = await _client.dio.get('/api/lists', queryParameters: {'uid': uid});
-    final lists = (response.data['lists'] as List? ?? []).cast<Map<String, dynamic>>();
+    final response = await _client.dio.get(
+      '/api/lists',
+      queryParameters: {'uid': uid},
+    );
+    final lists = (response.data['lists'] as List? ?? [])
+        .cast<Map<String, dynamic>>();
     return lists.map(ListItem.fromServerJson).toList();
   }
 
@@ -54,24 +59,32 @@ class LibraryApi {
         'title': title,
         'ownerUid': uid,
         'places': places
-            .map((p) => {
-                  'id': p.id,
-                  'name': p.name,
-                  'categoryName': p.categoryName,
-                  'address': p.address,
-                  'image': p.image,
-                  'placeUrl': p.placeUrl,
-                })
+            .map(
+              (p) => {
+                'id': p.id,
+                'name': p.name,
+                'categoryName': p.categoryName,
+                'address': p.address,
+                'image': p.image,
+                'placeUrl': p.placeUrl,
+              },
+            )
             .toList(),
       },
     );
-    return ListItem.fromServerJson(response.data['list'] as Map<String, dynamic>);
+    return ListItem.fromServerJson(
+      response.data['list'] as Map<String, dynamic>,
+    );
   }
 
   Future<void> addRestaurant(String uid, String listId, Place place) {
     return _client.dio.patch(
       '/api/lists/$listId/restaurants',
-      data: {'uid': uid, 'action': 'add', 'restaurant': _placeToRestaurantPayload(place)},
+      data: {
+        'uid': uid,
+        'action': 'add',
+        'restaurant': _placeToRestaurantPayload(place),
+      },
     );
   }
 
@@ -83,11 +96,17 @@ class LibraryApi {
   }
 
   Future<void> renameList(String uid, String listId, String title) {
-    return _client.dio.patch('/api/lists/$listId/title', data: {'uid': uid, 'title': title});
+    return _client.dio.patch(
+      '/api/lists/$listId/title',
+      data: {'uid': uid, 'title': title},
+    );
   }
 
   Future<void> setVisibility(String uid, String listId, bool isPublic) {
-    return _client.dio.patch('/api/lists/$listId/visibility', data: {'uid': uid, 'isPublic': isPublic});
+    return _client.dio.patch(
+      '/api/lists/$listId/visibility',
+      data: {'uid': uid, 'isPublic': isPublic},
+    );
   }
 
   Future<void> deleteList(String uid, String listId) {

@@ -9,6 +9,7 @@ class LocalStore {
   static const keyUser = 'dangmatch_user';
   static const keyLastProvider = 'dangmatch_last_provider';
   static const keyHasSeenLanding = 'dangmatch_has_seen_landing';
+  static const keyLocale = 'dangmatch_locale';
   static const keyRecentLocationSearches = 'recentLocationSearches';
 
   SharedPreferences? _prefs;
@@ -17,7 +18,8 @@ class LocalStore {
     return _prefs ??= await SharedPreferences.getInstance();
   }
 
-  Future<String?> getString(String key) async => (await _instance()).getString(key);
+  Future<String?> getString(String key) async =>
+      (await _instance()).getString(key);
 
   Future<void> setString(String key, String value) async {
     await (await _instance()).setString(key, value);

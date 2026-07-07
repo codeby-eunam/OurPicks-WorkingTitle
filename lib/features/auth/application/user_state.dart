@@ -32,7 +32,9 @@ class UserState {
       user: clearUser ? null : (user ?? this.user),
       hasSeenLanding: hasSeenLanding ?? this.hasSeenLanding,
       lastUsedProvider: lastUsedProvider ?? this.lastUsedProvider,
-      pendingLogin: clearPendingLogin ? null : (pendingLogin ?? this.pendingLogin),
+      pendingLogin: clearPendingLogin
+          ? null
+          : (pendingLogin ?? this.pendingLogin),
       initialized: initialized ?? this.initialized,
     );
   }

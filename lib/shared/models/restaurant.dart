@@ -13,6 +13,7 @@ class Restaurant {
     this.distance = '',
     this.placeUrl = '',
     this.naverUrl,
+    this.photoUrl = '',
   });
 
   final String id;
@@ -26,6 +27,11 @@ class Restaurant {
   final String distance;
   final String placeUrl;
   final String? naverUrl;
+
+  /// Relative path to the backend's photo proxy (Google Places only, empty
+  /// for Kakao-sourced results which have no photo data). Prefix with
+  /// [kApiBase] before use.
+  final String photoUrl;
 
   double get lat => double.tryParse(y) ?? 0;
   double get lng => double.tryParse(x) ?? 0;
@@ -49,6 +55,7 @@ class Restaurant {
       distance: json['distance']?.toString() ?? '',
       placeUrl: json['place_url']?.toString() ?? '',
       naverUrl: json['naver_url']?.toString(),
+      photoUrl: json['photo_url']?.toString() ?? '',
     );
   }
 
@@ -65,6 +72,7 @@ class Restaurant {
       'distance': distance,
       'place_url': placeUrl,
       if (naverUrl != null) 'naver_url': naverUrl,
+      'photo_url': photoUrl,
     };
   }
 }

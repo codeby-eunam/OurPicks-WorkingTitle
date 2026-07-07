@@ -9,6 +9,9 @@ import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../../shared/services/restaurant_badge.dart';
 import '../../../shared/widgets/kakao_webview.dart';
+import '../application/decision_resume.dart';
+import '../application/decision_session.dart';
+import 'widgets/decision_timer_chip.dart';
 
 class _MatchSnapshot {
   _MatchSnapshot(this.bracket, this.matchIdx, this.roundWinners, this.round);
@@ -26,9 +29,14 @@ List<Restaurant?> _makeBracket(List<Restaurant> list) {
 
 /// Port of app/tournament.tsx: single-elimination bracket with bye auto-advance.
 class TournamentScreen extends StatefulWidget {
-  const TournamentScreen({super.key, required this.restaurants});
+  const TournamentScreen({
+    super.key,
+    required this.restaurants,
+    this.locationName = '',
+  });
 
   final List<Restaurant> restaurants;
+  final String locationName;
 
   @override
   State<TournamentScreen> createState() => _TournamentScreenState();
@@ -47,22 +55,32 @@ class _TournamentScreenState extends State<TournamentScreen> {
   void initState() {
     super.initState();
     _loadWinCounts();
+    DecisionResumeService.instance.saveTournamentSession(
+      contenders: widget.restaurants,
+      locationName: widget.locationName,
+    );
   }
 
   Future<void> _loadWinCounts() async {
     if (widget.restaurants.isEmpty) return;
-    final map = await RestaurantStatsService.instance.getWinCounts(widget.restaurants.map((r) => r.id).toList());
+    final map = await RestaurantStatsService.instance.getWinCounts(
+      widget.restaurants.map((r) => r.id).toList(),
+    );
     if (mounted) setState(() => _winCountMap = map);
   }
 
   int get _totalMatches => _bracket.length ~/ 2;
-  Restaurant? get _left => _matchIdx * 2 < _bracket.length ? _bracket[_matchIdx * 2] : null;
-  Restaurant? get _right => _matchIdx * 2 + 1 < _bracket.length ? _bracket[_matchIdx * 2 + 1] : null;
+  Restaurant? get _left =>
+      _matchIdx * 2 < _bracket.length ? _bracket[_matchIdx * 2] : null;
+  Restaurant? get _right =>
+      _matchIdx * 2 + 1 < _bracket.length ? _bracket[_matchIdx * 2 + 1] : null;
 
-  Restaurant? get _activeRestaurant => _selectedSide == 'left' ? _left : (_selectedSide == 'right' ? _right : null);
+  Restaurant? get _activeRestaurant => _selectedSide == 'left'
+      ? _left
+      : (_selectedSide == 'right' ? _right : null);
 
-  String _getRoundName() {
-    final total = _bracket.length;
+  String _getRoundName({int? total}) {
+    total ??= _bracket.length;
     switch (total) {
       case 2:
         return '결승전';
@@ -109,9 +127,19 @@ class _TournamentScreenState extends State<TournamentScreen> {
     if (nextIdx >= _totalMatches) {
       if (next.length == 1) {
         RestaurantStatsService.instance.recordWin(next[0].id);
+        DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+        DecisionResumeService.instance.clear();
         context.pushReplacement('/result', extra: {'restaurant': next[0]});
         return;
       }
+      DecisionSessionService.instance.recordStage(
+        _getRoundName(total: next.length),
+        next.length,
+      );
+      DecisionResumeService.instance.saveTournamentSession(
+        contenders: next,
+        locationName: widget.locationName,
+      );
       setState(() {
         _bracket = _makeBracket(next);
         _matchIdx = 0;
@@ -150,7 +178,11 @@ class _TournamentScreenState extends State<TournamentScreen> {
 
   void _handleTodayPick() {
     final r = _activeRestaurant;
-    if (r != null) context.push('/result', extra: {'restaurant': r});
+    if (r != null) {
+      DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+      DecisionResumeService.instance.clear();
+      context.push('/result', extra: {'restaurant': r});
+    }
   }
 
   @override
@@ -160,7 +192,9 @@ class _TournamentScreenState extends State<TournamentScreen> {
     if (left == null && right == null) return const SizedBox.shrink();
 
     final activeUrl = _activeRestaurant != null
-        ? (_activeRestaurant!.placeUrl.isNotEmpty ? _activeRestaurant!.placeUrl : 'https://place.map.kakao.com/${_activeRestaurant!.id}')
+        ? (_activeRestaurant!.placeUrl.isNotEmpty
+              ? _activeRestaurant!.placeUrl
+              : 'https://place.map.kakao.com/${_activeRestaurant!.id}')
         : null;
 
     return Scaffold(
@@ -170,13 +204,27 @@ class _TournamentScreenState extends State<TournamentScreen> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: const BoxDecoration(color: Colors.white, border: Border(bottom: BorderSide(color: AppColors.surfaceMuted))),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  bottom: BorderSide(color: AppColors.surfaceMuted),
+                ),
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(onPressed: _handleGoBack, icon: const Icon(Icons.chevron_left, size: 26)),
-                  Text('${_getRoundName()}  ${_matchIdx + 1} / $_totalMatches', style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w700)),
-                  const SizedBox(width: 26),
+                  IconButton(
+                    onPressed: _handleGoBack,
+                    icon: const Icon(Icons.chevron_left, size: 26),
+                  ),
+                  Text(
+                    '${_getRoundName()}  ${_matchIdx + 1} / $_totalMatches',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const DecisionTimerChip(),
                 ],
               ),
             ),
@@ -191,7 +239,11 @@ class _TournamentScreenState extends State<TournamentScreen> {
               child: Text(
                 '세상에서 제일 힘든 선택이지? 하나만 골라.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.textPrimary),
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
             Expanded(
@@ -206,7 +258,13 @@ class _TournamentScreenState extends State<TournamentScreen> {
                         child: activeUrl != null
                             ? KakaoWebView(uri: activeUrl)
                             : const Center(
-                                child: Text('👆 카드를 선택하면\n맛집 정보가 표시돼요', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textSecondary)),
+                                child: Text(
+                                  '👆 카드를 선택하면\n맛집 정보가 표시돼요',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: AppColors.textSecondary,
+                                  ),
+                                ),
                               ),
                       ),
                     ),
@@ -217,9 +275,22 @@ class _TournamentScreenState extends State<TournamentScreen> {
                         child: GestureDetector(
                           onTap: _handleTodayPick,
                           child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
-                            decoration: BoxDecoration(color: AppColors.primary, borderRadius: BorderRadius.circular(20)),
-                            child: const Text('⭐ 오늘의 픽!', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800, fontSize: 13)),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 13,
+                              vertical: 7,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: const Text(
+                              '⭐ 오늘의 픽!',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w800,
+                                fontSize: 13,
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -229,25 +300,44 @@ class _TournamentScreenState extends State<TournamentScreen> {
             ),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (left != null) Expanded(child: _matchCard(left, 'left')),
-                  const SizedBox(
-                    width: 36,
-                    child: Center(child: Text('VS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w900, color: Color(0xFFD1D5DB), letterSpacing: 2))),
-                  ),
-                  if (right != null) Expanded(child: _matchCard(right, 'right')),
-                ],
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (left != null) Expanded(child: _matchCard(left, 'left')),
+                    const SizedBox(
+                      width: 36,
+                      child: Center(
+                        child: Text(
+                          'VS',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w900,
+                            color: Color(0xFFD1D5DB),
+                            letterSpacing: 2,
+                          ),
+                        ),
+                      ),
+                    ),
+                    if (right != null)
+                      Expanded(child: _matchCard(right, 'right')),
+                  ],
+                ),
               ),
             ),
             Container(
-              decoration: const BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: AppColors.surfaceMuted))),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(top: BorderSide(color: AppColors.surfaceMuted)),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
               child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(onPressed: _handleGoBack, child: const Text('← 이전으로')),
+                    child: OutlinedButton(
+                      onPressed: _handleGoBack,
+                      child: const Text('← 이전으로'),
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -275,29 +365,70 @@ class _TournamentScreenState extends State<TournamentScreen> {
         decoration: BoxDecoration(
           color: selected ? AppColors.primary : Colors.white,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: selected ? AppColors.primary : Colors.transparent, width: 3),
-          boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: selected ? 0.25 : 0.09), blurRadius: selected ? 16 : 12, offset: const Offset(0, 3))],
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.border,
+            width: selected ? 3 : 0.5,
+          ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(categoryEmojiFor(r.categoryName), style: const TextStyle(fontSize: 20)),
+            Text(
+              categoryEmojiFor(r.categoryName),
+              style: const TextStyle(fontSize: 20),
+            ),
             const SizedBox(height: 2),
-            Text(categoryLabelFor(r.categoryName), style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: selected ? Colors.white.withValues(alpha: 0.8) : const Color(0xFF9CA3AF))),
-            Text(r.placeName, maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: selected ? Colors.white : AppColors.textPrimary)),
+            Text(
+              categoryLabelFor(r.categoryName),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: selected
+                    ? Colors.white.withValues(alpha: 0.8)
+                    : const Color(0xFF9CA3AF),
+              ),
+            ),
+            Text(
+              r.placeName,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w800,
+                color: selected ? Colors.white : AppColors.textPrimary,
+              ),
+            ),
             Text(
               winCountBadge(_winCountMap[r.id]),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 10, color: selected ? Colors.white.withValues(alpha: 0.75) : const Color(0xFF6B7280)),
+              style: TextStyle(
+                fontSize: 10,
+                color: selected
+                    ? Colors.white.withValues(alpha: 0.75)
+                    : const Color(0xFF6B7280),
+              ),
             ),
             if (selected) ...[
               const SizedBox(height: 4),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.25), borderRadius: BorderRadius.circular(20)),
-                child: const Text('✓ 선택됨', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: Colors.white)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 3,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.25),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Text(
+                  '✓ 선택됨',
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.white,
+                  ),
+                ),
               ),
             ],
           ],

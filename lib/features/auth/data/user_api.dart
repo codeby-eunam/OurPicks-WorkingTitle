@@ -64,7 +64,8 @@ class UserApi {
   String _extractError(DioException e) {
     final data = e.response?.data;
     if (data is Map && data['error'] is String) return data['error'] as String;
-    if (data is Map && data['message'] is String) return data['message'] as String;
+    if (data is Map && data['message'] is String)
+      return data['message'] as String;
     return '서버 오류 (${e.response?.statusCode ?? '?'})';
   }
 }

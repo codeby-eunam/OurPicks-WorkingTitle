@@ -5,10 +5,10 @@ enum AuthProvider {
   google;
 
   String get idField => switch (this) {
-        AuthProvider.naver => 'naverId',
-        AuthProvider.google => 'googleId',
-        AuthProvider.kakao => 'kakaoId',
-      };
+    AuthProvider.naver => 'naverId',
+    AuthProvider.google => 'googleId',
+    AuthProvider.kakao => 'kakaoId',
+  };
 
   static AuthProvider fromName(String value) {
     return AuthProvider.values.firstWhere(
@@ -24,9 +24,6 @@ class AppUser {
     required this.provider,
     required this.userId,
     required this.nickname,
-    this.profileImage,
-    required this.joinOrder,
-    this.badges = const [],
     required this.createdAt,
   });
 
@@ -35,9 +32,6 @@ class AppUser {
   final AuthProvider provider;
   final String userId;
   final String nickname;
-  final String? profileImage;
-  final int joinOrder;
-  final List<String> badges;
   final String createdAt;
 
   AppUser copyWith({String? nickname}) {
@@ -46,9 +40,6 @@ class AppUser {
       provider: provider,
       userId: userId,
       nickname: nickname ?? this.nickname,
-      profileImage: profileImage,
-      joinOrder: joinOrder,
-      badges: badges,
       createdAt: createdAt,
     );
   }
@@ -59,10 +50,8 @@ class AppUser {
       provider: AuthProvider.fromName(json['provider']?.toString() ?? 'kakao'),
       userId: json['userId']?.toString() ?? '',
       nickname: json['nickname']?.toString() ?? '',
-      profileImage: json['profileImage']?.toString(),
-      joinOrder: (json['joinOrder'] as num?)?.toInt() ?? 9999,
-      badges: (json['badges'] as List? ?? []).map((e) => e.toString()).toList(),
-      createdAt: json['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
+      createdAt:
+          json['createdAt']?.toString() ?? DateTime.now().toIso8601String(),
     );
   }
 
@@ -72,9 +61,6 @@ class AppUser {
       'provider': provider.name,
       'userId': userId,
       'nickname': nickname,
-      if (profileImage != null) 'profileImage': profileImage,
-      'joinOrder': joinOrder,
-      'badges': badges,
       'createdAt': createdAt,
     };
   }
@@ -85,13 +71,11 @@ class PendingLogin {
   const PendingLogin({
     required this.kakaoId,
     required this.nickname,
-    this.profileImage,
     required this.provider,
   });
 
   final String kakaoId;
   final String nickname;
-  final String? profileImage;
   final AuthProvider provider;
 }
 
@@ -100,12 +84,10 @@ class OAuthResult {
   const OAuthResult({
     required this.needsSetup,
     required this.kakaoId,
-    this.profileImage,
     required this.provider,
   });
 
   final bool needsSetup;
   final String kakaoId;
-  final String? profileImage;
   final AuthProvider provider;
 }

@@ -1,0 +1,19 @@
+{
+  "@@locale": "ko",
+
+  "chooseLanguageTitle": "언어를 선택해주세요",
+  "chooseLanguageSubtitle": "설정에서 나중에 변경할 수 있어요",
+  "languageKorean": "한국어",
+  "languageEnglish": "English",
+  "continueButton": "계속하기",
+  "settingsTitle": "설정",
+  "settingsProfileSection": "프로필",
+  "settingsAppSection": "앱 설정",
+  "settingsInfoSection": "정보",
+  "settingsThemeLabel": "테마",
+  "settingsThemeValue": "라이트 (준비 중)",
+  "settingsClearCacheLabel": "캐시 삭제",
+  "settingsClearCacheValue": "준비 중",
+  "settingsLanguageLabel": "언어",
+  "settingsAppVersionLabel": "앱 버전"
+}

@@ -8,7 +8,11 @@ class AnalyticsService {
   AnalyticsService._();
   static final instance = AnalyticsService._();
 
-  Future<void> _logEvent(String event, Map<String, dynamic> payload, {String? userId}) async {
+  Future<void> _logEvent(
+    String event,
+    Map<String, dynamic> payload, {
+    String? userId,
+  }) async {
     try {
       await FirebaseFirestore.instance.collection('events').add({
         'event': event,
@@ -21,11 +25,23 @@ class AnalyticsService {
     }
   }
 
-  void logFilterSelected(List<String> filters, String locationName, {String? userId}) {
-    _logEvent('filter_selected', {'filters': filters, 'locationName': locationName}, userId: userId);
+  void logFilterSelected(
+    List<String> filters,
+    String locationName, {
+    String? userId,
+  }) {
+    _logEvent('filter_selected', {
+      'filters': filters,
+      'locationName': locationName,
+    }, userId: userId);
   }
 
-  void logLocationSearched(String query, int resultCount, {String? selectedPlace, String? userId}) {
+  void logLocationSearched(
+    String query,
+    int resultCount, {
+    String? selectedPlace,
+    String? userId,
+  }) {
     _logEvent('location_searched', {
       'query': query,
       'resultCount': resultCount,
@@ -65,6 +81,14 @@ class AnalyticsService {
       'category': category,
       'mode': mode,
       'locationName': locationName,
+    }, userId: userId);
+  }
+
+  /// level: 'unsure' | 'okay' | 'confident' | 'very_confident'
+  void logChoiceConfidence(String storeId, String level, {String? userId}) {
+    _logEvent('choice_confidence', {
+      'storeId': storeId,
+      'level': level,
     }, userId: userId);
   }
 

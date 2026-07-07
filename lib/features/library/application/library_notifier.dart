@@ -19,7 +19,13 @@ class LibraryNotifier extends Notifier<LibraryState> {
   LibraryState build() {
     ref.listen<String?>(
       userProvider.select((s) => s.user?.kakaoId),
-      (previous, next) => _onUidChanged(next),
+      // Deferred to a microtask: fireImmediately invokes this synchronously
+      // during build(), and if userProvider's kakaoId is already non-null at
+      // that point (e.g. navigating straight to a list detail screen without
+      // visiting the library tab first), reading `state` before build()
+      // returns throws "Tried to read the state of an uninitialized
+      // provider." Scheduling avoids the self-read race entirely.
+      (previous, next) => Future.microtask(() => _onUidChanged(next)),
       fireImmediately: true,
     );
     ref.onDispose(() {
@@ -66,7 +72,11 @@ class LibraryNotifier extends Notifier<LibraryState> {
       return;
     }
 
-    final created = await _api.createList(uid: uid, title: title, places: places);
+    final created = await _api.createList(
+      uid: uid,
+      title: title,
+      places: places,
+    );
     state = state.copyWith(lists: [created, ...state.lists]);
   }
 
@@ -88,7 +98,11 @@ class LibraryNotifier extends Notifier<LibraryState> {
         continue;
       }
       final merged = [...list.places, ...newlyAdded];
-      updatedTarget = list.copyWith(places: merged, count: merged.length, images: rebuildImages(merged));
+      updatedTarget = list.copyWith(
+        places: merged,
+        count: merged.length,
+        images: rebuildImages(merged),
+      );
       updatedLists.add(updatedTarget);
     }
 
@@ -104,13 +118,17 @@ class LibraryNotifier extends Notifier<LibraryState> {
   /// 순서 변경은 RN에서도 서버 동기화 없이 로컬 표시 순서만 바꾸는 기능이었다.
   void reorderPlaces(String listId, List<Place> newOrder) {
     state = state.copyWith(
-      lists: state.lists.map((l) => l.id == listId ? l.copyWith(places: newOrder) : l).toList(),
+      lists: state.lists
+          .map((l) => l.id == listId ? l.copyWith(places: newOrder) : l)
+          .toList(),
     );
   }
 
   void deleteList(String listId) {
     final uid = _uid;
-    state = state.copyWith(lists: state.lists.where((l) => l.id != listId).toList());
+    state = state.copyWith(
+      lists: state.lists.where((l) => l.id != listId).toList(),
+    );
     _debounceMap.remove(listId)?.cancel();
     if (uid != null) {
       _api.deleteList(uid, listId).catchError((_) {});
@@ -120,7 +138,9 @@ class LibraryNotifier extends Notifier<LibraryState> {
   void renameList(String listId, String title) {
     final uid = _uid;
     state = state.copyWith(
-      lists: state.lists.map((l) => l.id == listId ? l.copyWith(title: title) : l).toList(),
+      lists: state.lists
+          .map((l) => l.id == listId ? l.copyWith(title: title) : l)
+          .toList(),
     );
     if (uid != null) {
       _api.renameList(uid, listId, title).catchError((_) {});
@@ -130,7 +150,9 @@ class LibraryNotifier extends Notifier<LibraryState> {
   /// 즉시 UI 반영, 1.5초 debounce 후 서버에 최종 상태만 전송.
   void togglePublic(String listId) {
     state = state.copyWith(
-      lists: state.lists.map((l) => l.id == listId ? l.copyWith(isPublic: !l.isPublic) : l).toList(),
+      lists: state.lists
+          .map((l) => l.id == listId ? l.copyWith(isPublic: !l.isPublic) : l)
+          .toList(),
     );
 
     _debounceMap.remove(listId)?.cancel();
@@ -151,7 +173,11 @@ class LibraryNotifier extends Notifier<LibraryState> {
       lists: state.lists.map((l) {
         if (l.id != listId) return l;
         final places = l.places.where((p) => p.id != placeId).toList();
-        return l.copyWith(places: places, count: places.length, images: rebuildImages(places));
+        return l.copyWith(
+          places: places,
+          count: places.length,
+          images: rebuildImages(places),
+        );
       }).toList(),
     );
     if (uid != null) {
@@ -164,4 +190,6 @@ extension _FirstOrNull<T> on Iterable<T> {
   T? get firstOrNull => isEmpty ? null : first;
 }
 
-final libraryProvider = NotifierProvider<LibraryNotifier, LibraryState>(LibraryNotifier.new);
+final libraryProvider = NotifierProvider<LibraryNotifier, LibraryState>(
+  LibraryNotifier.new,
+);

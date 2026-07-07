@@ -1,6 +1,8 @@
 /// Port of app/tournament.tsx's getCategoryEmoji / getCategoryLabel helpers.
 String categoryEmojiFor(String rawCategoryName) {
-  final cat = (rawCategoryName.split('>').lastOrNull ?? '').trim().toLowerCase();
+  final cat = (rawCategoryName.split('>').lastOrNull ?? '')
+      .trim()
+      .toLowerCase();
   if (cat.contains('카페') || cat.contains('커피')) return '☕';
   if (cat.contains('한식')) return '🍚';
   if (cat.contains('일식') || cat.contains('초밥')) return '🍣';

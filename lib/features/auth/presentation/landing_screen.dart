@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/models/app_user.dart';
-import '../../../shared/widgets/floating_contact_button.dart';
 import '../application/user_notifier.dart';
 import '../application/user_state.dart';
 
@@ -30,11 +29,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
       if (result.needsSetup) {
         context.replace(
           '/setup-profile',
-          extra: {
-            'kakaoId': result.kakaoId,
-            'profileImage': result.profileImage ?? '',
-            'provider': result.provider.name,
-          },
+          extra: {'kakaoId': result.kakaoId, 'provider': result.provider.name},
         );
       } else {
         context.go('/');
@@ -48,7 +43,10 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           title: const Text('로그인 오류'),
           content: Text(err.toString().replaceFirst('Exception: ', '')),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(context), child: const Text('확인')),
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('확인'),
+            ),
           ],
         ),
       );
@@ -70,21 +68,19 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFFF8F5),
       body: SafeAreaView(
-        child: Stack(
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: compact ? 20 : 24, vertical: compact ? 16 : 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildBranding(compact),
-                  _buildFeatures(compact),
-                  _buildButtons(userState, compact, isLoading),
-                ],
-              ),
-            ),
-            const FloatingContactButton(),
-          ],
+        child: Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 20 : 24,
+            vertical: compact ? 16 : 20,
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _buildBranding(compact),
+              _buildFeatures(compact),
+              _buildButtons(userState, compact, isLoading),
+            ],
+          ),
         ),
       ),
     );
@@ -100,9 +96,6 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           decoration: BoxDecoration(
             color: const Color(0xFF006D77),
             borderRadius: BorderRadius.circular(compact ? 18 : 26),
-            boxShadow: [
-              BoxShadow(color: const Color(0xFF006D77).withValues(alpha: 0.38), blurRadius: 14, offset: const Offset(0, 5)),
-            ],
           ),
           child: Center(
             child: Text('🐻', style: TextStyle(fontSize: compact ? 32 : 44)),
@@ -120,12 +113,19 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
         SizedBox(height: compact ? 2 : 6),
         Text(
           '오늘 뭐 먹을지, 고민 끝!',
-          style: TextStyle(fontSize: compact ? 13 : 16, fontWeight: FontWeight.w700, color: const Color(0xFFFF6B35)),
+          style: TextStyle(
+            fontSize: compact ? 13 : 16,
+            fontWeight: FontWeight.w700,
+            color: const Color(0xFFFF6B35),
+          ),
         ),
         SizedBox(height: compact ? 0 : 4),
         Text(
           '위치 기반 맛집 추천 & 나만의 보관함',
-          style: TextStyle(fontSize: compact ? 11 : 13, color: const Color(0xFF9CA3AF)),
+          style: TextStyle(
+            fontSize: compact ? 11 : 13,
+            color: const Color(0xFF9CA3AF),
+          ),
         ),
       ],
     );
@@ -143,17 +143,27 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           Container(
             width: double.infinity,
             margin: EdgeInsets.only(bottom: compact ? 5 : 8),
-            padding: EdgeInsets.symmetric(horizontal: compact ? 14 : 18, vertical: compact ? 8 : 13),
+            padding: EdgeInsets.symmetric(
+              horizontal: compact ? 14 : 18,
+              vertical: compact ? 8 : 13,
+            ),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(compact ? 10 : 14),
-              boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.05), blurRadius: 6, offset: const Offset(0, 2))],
+              border: Border.all(color: const Color(0xFFE5E7EB)),
             ),
             child: Row(
               children: [
                 Text(emoji, style: TextStyle(fontSize: compact ? 18 : 22)),
                 SizedBox(width: compact ? 10 : 12),
-                Text(text, style: TextStyle(fontSize: compact ? 12 : 14, fontWeight: FontWeight.w500, color: const Color(0xFF374151))),
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: compact ? 12 : 14,
+                    fontWeight: FontWeight.w500,
+                    color: const Color(0xFF374151),
+                  ),
+                ),
               ],
             ),
           ),
@@ -210,11 +220,17 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             style: OutlinedButton.styleFrom(
               padding: EdgeInsets.symmetric(vertical: compact ? 10 : 13),
               side: const BorderSide(color: Color(0xFFE5E7EB), width: 1.5),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
             ),
             child: Text(
               '로그인 없이 시작하기',
-              style: TextStyle(fontSize: compact ? 14 : 14, fontWeight: FontWeight.w600, color: const Color(0xFF6B7280)),
+              style: TextStyle(
+                fontSize: compact ? 14 : 14,
+                fontWeight: FontWeight.w600,
+                color: const Color(0xFF6B7280),
+              ),
             ),
           ),
         ),
@@ -223,7 +239,11 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           const Text(
             '로그인 시 보관함과 마이페이지를 이용할 수 있어요',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF), height: 1.4),
+            style: TextStyle(
+              fontSize: 12,
+              color: Color(0xFF9CA3AF),
+              height: 1.4,
+            ),
           ),
         ],
       ],
@@ -269,15 +289,20 @@ class _SocialButton extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: compact ? 12 : 15),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
-            side: border != null ? BorderSide(color: border!, width: 1.5) : BorderSide.none,
+            side: border != null
+                ? BorderSide(color: border!, width: 1.5)
+                : BorderSide.none,
           ),
-          elevation: 2,
+          elevation: 0,
         ),
         child: isLoading
             ? SizedBox(
                 height: 20,
                 width: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: textColor),
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: textColor,
+                ),
               )
             : Stack(
                 alignment: Alignment.center,
@@ -285,21 +310,45 @@ class _SocialButton extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(icon, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: iconColor ?? textColor)),
+                      Text(
+                        icon,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: iconColor ?? textColor,
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      Text(label, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700, color: textColor)),
+                      Text(
+                        label,
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          color: textColor,
+                        ),
+                      ),
                     ],
                   ),
                   if (isRecent)
                     Positioned(
                       right: 0,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 7,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.18),
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text('최근 사용', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: textColor)),
+                        child: Text(
+                          '최근 사용',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: textColor,
+                          ),
+                        ),
                       ),
                     ),
                 ],

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -19,7 +18,6 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
   List<UserLogEntry> _logs = [];
   bool _loading = true;
   bool _error = false;
-  String? _toast;
 
   @override
   void initState() {
@@ -44,14 +42,14 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
     }
   }
 
-  void _showToast(String message) {
-    setState(() => _toast = message);
-    Future.delayed(const Duration(milliseconds: 2500), () {
-      if (mounted) setState(() => _toast = null);
-    });
-  }
-
   String _formatDate(DateTime date) => DateFormat('yyyy.MM.dd').format(date);
+
+  bool _isToday(DateTime date) {
+    final now = DateTime.now();
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,13 +58,18 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
       body: Stack(
         children: [
           if (_loading)
-            const Center(child: CircularProgressIndicator(color: AppColors.primary))
+            const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            )
           else if (_error)
             Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('불러오는 중 오류가 발생했어요.', style: TextStyle(color: AppColors.textSecondary)),
+                  const Text(
+                    '불러오는 중 오류가 발생했어요.',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                   const SizedBox(height: 8),
                   ElevatedButton(onPressed: _fetch, child: const Text('다시 시도')),
                 ],
@@ -79,48 +82,74 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                 children: [
                   Text('🍽️', style: TextStyle(fontSize: 48)),
                   SizedBox(height: 8),
-                  Text('아직 선택한 맛집이 없어요', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text(
+                    '아직 선택한 맛집이 없어요',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
                   SizedBox(height: 4),
-                  Text('당맷치로 맛집을 골라보세요!', style: TextStyle(color: AppColors.textSecondary)),
+                  Text(
+                    '당맷치로 맛집을 골라보세요!',
+                    style: TextStyle(color: AppColors.textSecondary),
+                  ),
                 ],
               ),
             )
           else
-            ListView(
-              padding: const EdgeInsets.all(16),
-              children: [
-                Text('${_logs.length}개의 기록', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.textSecondary)),
-                const SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(18),
-                    boxShadow: [BoxShadow(color: Colors.black.withValues(alpha: 0.04), blurRadius: 6, offset: const Offset(0, 2))],
-                  ),
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < _logs.length; i++) ...[
-                        if (i > 0) const Divider(height: 1, indent: 18, endIndent: 18),
-                        _buildRow(_logs[i]),
-                      ],
+            Builder(
+              builder: (context) {
+                final today = _logs
+                    .where((l) => _isToday(l.selectedAtDate))
+                    .toList();
+                final earlier = _logs
+                    .where((l) => !_isToday(l.selectedAtDate))
+                    .toList();
+                return ListView(
+                  padding: const EdgeInsets.all(16),
+                  children: [
+                    if (today.isNotEmpty) ...[
+                      _buildSectionHeader('오늘의 결정', today.length),
+                      const SizedBox(height: 10),
+                      _buildLogCard(today),
+                      const SizedBox(height: 20),
                     ],
-                  ),
-                ),
-              ],
+                    if (earlier.isNotEmpty) ...[
+                      _buildSectionHeader('이전 기록', earlier.length),
+                      const SizedBox(height: 10),
+                      _buildLogCard(earlier),
+                    ],
+                  ],
+                );
+              },
             ),
-          if (_toast != null)
-            Positioned(
-              bottom: 40,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(color: Colors.black.withValues(alpha: 0.75), borderRadius: BorderRadius.circular(20)),
-                  child: Text(_toast!, style: const TextStyle(color: Colors.white)),
-                ),
-              ),
-            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionHeader(String title, int count) {
+    return Text(
+      '$title · $count개',
+      style: const TextStyle(
+        fontSize: 12,
+        fontWeight: FontWeight.w700,
+        color: AppColors.textSecondary,
+      ),
+    );
+  }
+
+  Widget _buildLogCard(List<UserLogEntry> logs) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.border, width: 0.5),
+      ),
+      child: Column(
+        children: [
+          for (var i = 0; i < logs.length; i++) ...[
+            if (i > 0) const Divider(height: 1, indent: 18, endIndent: 18),
+            _buildRow(logs[i]),
+          ],
         ],
       ),
     );
@@ -129,28 +158,24 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
   Widget _buildRow(UserLogEntry item) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(_formatDate(item.selectedAtDate), style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
-                Text(item.restaurantName, style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w500, color: Color(0xFF374151))),
-              ],
+          Text(
+            _formatDate(item.selectedAtDate),
+            style: const TextStyle(
+              fontSize: 11,
+              color: AppColors.textSecondary,
             ),
           ),
-          if (item.reviewed)
-            OutlinedButton(
-              onPressed: () => _showToast('영수증 출력 기능은 곧 출시 예정이에요!'),
-              child: const Text('🧾 영수증'),
-            )
-          else
-            OutlinedButton(
-              onPressed: () => context.push('/review', extra: {'restaurantId': item.restaurantId, 'restaurantName': item.restaurantName}),
-              style: OutlinedButton.styleFrom(foregroundColor: AppColors.primary, side: const BorderSide(color: AppColors.primary, width: 1.5)),
-              child: const Text('리뷰쓰기'),
+          Text(
+            item.restaurantName,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w500,
+              color: Color(0xFF374151),
             ),
+          ),
         ],
       ),
     );

@@ -26,9 +26,12 @@ class RestaurantStatsService {
   Future<Map<String, int>> getWinCounts(List<String> restaurantIds) async {
     final result = <String, int>{};
     try {
-      final snaps = await Future.wait(restaurantIds.map((id) => _restaurants.doc(id).get()));
+      final snaps = await Future.wait(
+        restaurantIds.map((id) => _restaurants.doc(id).get()),
+      );
       for (var i = 0; i < restaurantIds.length; i++) {
-        result[restaurantIds[i]] = (snaps[i].data()?['winCount'] as num?)?.toInt() ?? 0;
+        result[restaurantIds[i]] =
+            (snaps[i].data()?['winCount'] as num?)?.toInt() ?? 0;
       }
     } catch (e) {
       debugPrint('[stats] getWinCounts 실패: $e');
@@ -44,7 +47,8 @@ class RestaurantStatsService {
         final snap = await tx.get(ref);
         final data = snap.data() ?? {};
         final newWinCount = ((data['winCount'] as num?)?.toInt() ?? 0) + 1;
-        final tournamentCount = ((data['tournamentCount'] as num?)?.toInt() ?? 1).clamp(1, 1 << 30);
+        final tournamentCount =
+            ((data['tournamentCount'] as num?)?.toInt() ?? 1).clamp(1, 1 << 30);
         tx.set(ref, {
           'winCount': newWinCount,
           'winRate': newWinCount / tournamentCount,
@@ -57,7 +61,9 @@ class RestaurantStatsService {
 
   Future<void> recordLoss(String restaurantId) async {
     try {
-      await _restaurants.doc(restaurantId).set({'loseCount': FieldValue.increment(1)}, SetOptions(merge: true));
+      await _restaurants.doc(restaurantId).set({
+        'loseCount': FieldValue.increment(1),
+      }, SetOptions(merge: true));
     } catch (e) {
       debugPrint('[stats] recordLoss 실패: $e');
     }
@@ -65,7 +71,9 @@ class RestaurantStatsService {
 
   Future<void> recordSwipeChoice(String restaurantId) async {
     try {
-      await _restaurants.doc(restaurantId).set({'choiceCount': FieldValue.increment(1)}, SetOptions(merge: true));
+      await _restaurants.doc(restaurantId).set({
+        'choiceCount': FieldValue.increment(1),
+      }, SetOptions(merge: true));
     } catch (e) {
       debugPrint('[stats] recordSwipeChoice 실패: $e');
     }
@@ -73,7 +81,9 @@ class RestaurantStatsService {
 
   Future<void> recordSwipePass(String restaurantId) async {
     try {
-      await _restaurants.doc(restaurantId).set({'passCount': FieldValue.increment(1)}, SetOptions(merge: true));
+      await _restaurants.doc(restaurantId).set({
+        'passCount': FieldValue.increment(1),
+      }, SetOptions(merge: true));
     } catch (e) {
       debugPrint('[stats] recordSwipePass 실패: $e');
     }
