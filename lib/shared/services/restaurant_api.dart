@@ -43,4 +43,19 @@ class RestaurantApi {
         .cast<Map<String, dynamic>>();
     return documents.map(Restaurant.fromJson).toList();
   }
+
+  /// GET /api/kakao/place-photo?id= — Kakao Local API returns no photo, so
+  /// this reads it lazily (og:image scrape) for one card at a time instead
+  /// of eagerly for a whole result list.
+  Future<String> fetchPlacePhoto(String id) async {
+    try {
+      final response = await _client.dio.get(
+        '/api/kakao/place-photo',
+        queryParameters: {'id': id},
+      );
+      return response.data['photo_url']?.toString() ?? '';
+    } catch (_) {
+      return '';
+    }
+  }
 }

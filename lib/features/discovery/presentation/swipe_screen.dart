@@ -10,6 +10,7 @@ import '../../../shared/models/place.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/analytics_service.dart';
+import '../../../shared/services/restaurant_api.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
 import '../../library/application/library_notifier.dart';
 import '../application/decision_resume.dart';
@@ -38,24 +39,63 @@ Place _toPlace(Restaurant r) {
 /// Lightweight card: name, address and a simple category icon — no per-card
 /// webview/network page load. Reviews and hours are only fetched once the
 /// user commits to a specific place (tournament match preview).
-class _SwipeCard extends StatelessWidget {
+class _SwipeCard extends StatefulWidget {
   const _SwipeCard({required this.restaurant});
 
   final Restaurant restaurant;
 
   @override
+  State<_SwipeCard> createState() => _SwipeCardState();
+}
+
+class _SwipeCardState extends State<_SwipeCard> {
+  String? _lazyPhotoUrl;
+  String? _lazyPhotoForId;
+
+  @override
+  void initState() {
+    super.initState();
+    _maybeFetchKakaoPhoto();
+  }
+
+  @override
+  void didUpdateWidget(covariant _SwipeCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.restaurant.id != widget.restaurant.id) {
+      _maybeFetchKakaoPhoto();
+    }
+  }
+
+  /// Kakao's Local API returns no photo field at all, so for Kakao-sourced
+  /// restaurants (no photoUrl from the backend) we look one up lazily -
+  /// one small request per card as the user swipes, not upfront for the
+  /// whole result list.
+  Future<void> _maybeFetchKakaoPhoto() async {
+    final r = widget.restaurant;
+    if (r.photoUrl.isNotEmpty || !r.placeUrl.contains('kakao.com')) return;
+    final id = r.id;
+    final url = await RestaurantApi().fetchPlacePhoto(id);
+    if (mounted && widget.restaurant.id == id) {
+      setState(() {
+        _lazyPhotoForId = id;
+        _lazyPhotoUrl = url;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final r = restaurant;
+    final r = widget.restaurant;
     final address = r.roadAddressName.isNotEmpty
         ? r.roadAddressName
         : r.addressName;
     // Fresh API results carry a relative proxy path; library round-trips
     // (Place.image) are already absolute - don't double-prefix those.
-    final photoUrl = r.photoUrl.isEmpty
-        ? ''
-        : (r.photoUrl.startsWith('http')
+    final photoUrl = r.photoUrl.isNotEmpty
+        ? (r.photoUrl.startsWith('http')
               ? r.photoUrl
-              : '$kApiBase${r.photoUrl}');
+              : '$kApiBase${r.photoUrl}')
+        : (_lazyPhotoForId == r.id ? (_lazyPhotoUrl ?? '') : '');
 
     return Container(
       color: Colors.white,
@@ -178,9 +218,12 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
   int _index = 0;
   final List<Restaurant> _liked = [];
   bool _done = false;
-  String? _swipeDir; // 'pass' | 'yumi'
   int _choiceCount = 0;
   DateTime _viewStart = DateTime.now();
+
+  double _dragDx = 0;
+  bool _isDragging = false;
+  Animation<double>? _positionAnimation;
 
   late final AnimationController _exitController;
   late final AnimationController _fadeInController;
@@ -268,13 +311,64 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     }
   }
 
-  Future<void> _animateCard(bool like) async {
-    setState(() => _swipeDir = like ? 'yumi' : 'pass');
+  static const _swipeThreshold = 120.0;
+  static const _flingVelocityThreshold = 800.0;
+
+  void _handlePanStart(DragStartDetails details) {
+    setState(() => _isDragging = true);
+  }
+
+  void _handlePanUpdate(DragUpdateDetails details) {
+    setState(() => _dragDx += details.delta.dx);
+  }
+
+  void _handlePanEnd(DragEndDetails details) {
+    final velocity = details.velocity.pixelsPerSecond.dx;
+    final passedThreshold =
+        _dragDx.abs() > _swipeThreshold ||
+        velocity.abs() > _flingVelocityThreshold;
+    if (passedThreshold) {
+      _flingOff(_dragDx > 0);
+    } else {
+      _snapBack();
+    }
+  }
+
+  Future<void> _flingOff(bool like) async {
+    final screenWidth = MediaQuery.of(context).size.width;
+    setState(() {
+      _isDragging = false;
+      _positionAnimation =
+          Tween<double>(
+            begin: _dragDx,
+            end: like ? screenWidth * 1.5 : -screenWidth * 1.5,
+          ).animate(
+            CurvedAnimation(parent: _exitController, curve: Curves.easeOut),
+          );
+    });
     await _exitController.forward(from: 0);
-    setState(() => _swipeDir = null);
     _advance(like);
     _exitController.value = 0;
+    setState(() {
+      _dragDx = 0;
+      _positionAnimation = null;
+    });
     _fadeInController.forward(from: 0);
+  }
+
+  Future<void> _snapBack() async {
+    setState(() {
+      _isDragging = false;
+      _positionAnimation = Tween<double>(begin: _dragDx, end: 0).animate(
+        CurvedAnimation(parent: _exitController, curve: Curves.easeOut),
+      );
+    });
+    await _exitController.forward(from: 0);
+    _exitController.value = 0;
+    setState(() {
+      _dragDx = 0;
+      _positionAnimation = null;
+    });
   }
 
   void _goToResult(List<Restaurant> likedList) {
@@ -401,68 +495,94 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
-                    child: AnimatedBuilder(
-                      animation: Listenable.merge([
-                        _exitController,
-                        _fadeInController,
-                      ]),
-                      builder: (context, child) {
-                        final exitT = _exitController.value;
-                        final dx =
-                            (_swipeDir == 'yumi'
-                                ? 500.0
-                                : (_swipeDir == 'pass' ? -500.0 : 0.0)) *
-                            exitT;
-                        final rotateSign = _swipeDir == 'yumi'
-                            ? 1.0
-                            : (_swipeDir == 'pass' ? -1.0 : 0.0);
-                        final opacity = (1 - exitT) * _fadeInController.value;
+                    child: GestureDetector(
+                      onHorizontalDragStart: _handlePanStart,
+                      onHorizontalDragUpdate: _handlePanUpdate,
+                      onHorizontalDragEnd: _handlePanEnd,
+                      child: AnimatedBuilder(
+                        animation: Listenable.merge([
+                          _exitController,
+                          _fadeInController,
+                        ]),
+                        builder: (context, child) {
+                          final dx = _isDragging
+                              ? _dragDx
+                              : (_positionAnimation?.value ?? 0);
+                          final rotateAngle =
+                              (dx / 300).clamp(-1.0, 1.0) * 12 * pi / 180;
+                          final exitFade = _isDragging
+                              ? 1.0
+                              : (1 - _exitController.value).clamp(0.0, 1.0);
+                          final opacity = exitFade * _fadeInController.value;
+                          final passOpacity = dx < 0
+                              ? (dx.abs() / 150).clamp(0.0, 1.0)
+                              : 0.0;
+                          final yumiOpacity = dx > 0
+                              ? (dx / 150).clamp(0.0, 1.0)
+                              : 0.0;
 
-                        return Transform.translate(
-                          offset: Offset(dx, 0),
-                          child: Transform.rotate(
-                            angle: rotateSign * exitT * 12 * pi / 180,
-                            child: Opacity(
-                              opacity: opacity.clamp(0.0, 1.0),
-                              child: child,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Stack(
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
-                            child: Container(
-                              color: const Color(0xFFF0F0F0),
-                              child: _SwipeCard(restaurant: current),
-                            ),
-                          ),
-                          if (_choiceCount > 0)
-                            Positioned(
-                              top: 10,
-                              left: 10,
-                              child: _badge(
-                                t.swipeChoiceCountBadge(_choiceCount),
+                          return Transform.translate(
+                            offset: Offset(dx, 0),
+                            child: Transform.rotate(
+                              angle: rotateAngle,
+                              child: Opacity(
+                                opacity: opacity.clamp(0.0, 1.0),
+                                child: Stack(
+                                  children: [
+                                    child!,
+                                    if (passOpacity > 0)
+                                      Positioned.fill(
+                                        child: Opacity(
+                                          opacity: passOpacity,
+                                          child: _overlayLabel(
+                                            'PASS',
+                                            Colors.red,
+                                          ),
+                                        ),
+                                      ),
+                                    if (yumiOpacity > 0)
+                                      Positioned.fill(
+                                        child: Opacity(
+                                          opacity: yumiOpacity,
+                                          child: _overlayLabel(
+                                            'YUMI!',
+                                            _kOrange,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ),
                             ),
-                          if (_swipeDir == 'pass')
-                            Positioned.fill(
-                              child: _overlayLabel('PASS', Colors.red),
+                          );
+                        },
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                color: const Color(0xFFF0F0F0),
+                                child: _SwipeCard(restaurant: current),
+                              ),
                             ),
-                          if (_swipeDir == 'yumi')
-                            Positioned.fill(
-                              child: _overlayLabel('YUMI!', _kOrange),
+                            if (_choiceCount > 0)
+                              Positioned(
+                                top: 10,
+                                left: 10,
+                                child: _badge(
+                                  t.swipeChoiceCountBadge(_choiceCount),
+                                ),
+                              ),
+                            Positioned(
+                              top: 10,
+                              right: 10,
+                              child: GestureDetector(
+                                onTap: () => _goToResult([current]),
+                                child: _badge(t.swipeTodaysPickBadge),
+                              ),
                             ),
-                          Positioned(
-                            top: 10,
-                            right: 10,
-                            child: GestureDetector(
-                              onTap: () => _goToResult([current]),
-                              child: _badge(t.swipeTodaysPickBadge),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -477,7 +597,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                         color: Colors.white.withValues(alpha: 0.22),
                         iconColor: Colors.white,
                         label: 'PASS',
-                        onTap: () => _animateCard(false),
+                        onTap: () => _flingOff(false),
                       ),
                       const SizedBox(width: 28),
                       _actionButton(
@@ -486,7 +606,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                         iconColor: Colors.white,
                         label: 'YUMI!',
                         labelColor: _kOrange,
-                        onTap: () => _animateCard(true),
+                        onTap: () => _flingOff(true),
                       ),
                     ],
                   ),
