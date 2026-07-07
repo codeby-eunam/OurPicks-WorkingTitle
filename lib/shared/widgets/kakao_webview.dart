@@ -41,17 +41,30 @@ class _KakaoWebViewState extends State<KakaoWebView> {
 
   void _buildController() {
     _loading = true;
+    final uri = Uri.parse(widget.uri);
+    // Kakao's place page renders better under an iOS UA; Google Maps treats
+    // that same UA as a real iPhone and tries to deep-link to the App Store
+    // (itms-appss://), which Android's WebView can't open. Only spoof iOS
+    // for Kakao's own domain.
+    final isKakaoHost = uri.host.endsWith('kakao.com');
     _controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setUserAgent(_iosUserAgent)
+      ..setUserAgent(isKakaoHost ? _iosUserAgent : null)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onNavigationRequest: (request) {
+            final scheme = Uri.tryParse(request.url)?.scheme;
+            if (scheme != 'http' && scheme != 'https') {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
           onPageFinished: (_) {
             if (mounted) setState(() => _loading = false);
           },
         ),
       )
-      ..loadRequest(Uri.parse(widget.uri));
+      ..loadRequest(uri);
   }
 
   @override

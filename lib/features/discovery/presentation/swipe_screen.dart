@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/place.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/models/restaurant_category.dart';
 import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_stats_service.dart';
-import '../../../shared/widgets/kakao_webview.dart';
 import '../../library/application/library_notifier.dart';
 import '../application/decision_resume.dart';
 import '../application/decision_session.dart';
@@ -17,9 +17,6 @@ import 'widgets/decision_timer_chip.dart';
 
 const _kBgTeal = Color(0xFF1E7874);
 const _kOrange = Color(0xFFF57C4A);
-
-String _buildWebUrl(Restaurant r) =>
-    r.placeUrl.isNotEmpty ? r.placeUrl : 'https://place.map.kakao.com/${r.id}';
 
 Place _toPlace(Restaurant r) {
   final categoryShort = categoryLabelFor(r.categoryName);
@@ -33,6 +30,99 @@ Place _toPlace(Restaurant r) {
     image: 'https://picsum.photos/seed/${r.id}/200/200',
     placeUrl: r.placeUrl,
   );
+}
+
+/// Lightweight card: name, address and a simple category icon — no per-card
+/// webview/network page load. Reviews and hours are only fetched once the
+/// user commits to a specific place (tournament match preview).
+class _SwipeCard extends StatelessWidget {
+  const _SwipeCard({required this.restaurant});
+
+  final Restaurant restaurant;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = restaurant;
+    final address = r.roadAddressName.isNotEmpty
+        ? r.roadAddressName
+        : r.addressName;
+
+    return Container(
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 3,
+            child: Container(
+              color: _kBgTeal.withValues(alpha: 0.08),
+              alignment: Alignment.center,
+              child: Text(
+                categoryEmojiFor(r.categoryName),
+                style: const TextStyle(fontSize: 96),
+              ),
+            ),
+          ),
+          Expanded(
+            flex: 2,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    categoryLabelFor(r.categoryName),
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF9CA3AF),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    r.placeName,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontSize: 21,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A1A1A),
+                    ),
+                  ),
+                  if (address.isNotEmpty) ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.place_outlined,
+                          size: 16,
+                          color: Color(0xFF9CA3AF),
+                        ),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            address,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              color: Color(0xFF6B7280),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 /// Port of app/swipe.tsx.
@@ -136,7 +226,10 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     }
 
     if (_index + 1 >= _restaurants.length) {
-      DecisionSessionService.instance.recordStage('1차 선택', _liked.length);
+      DecisionSessionService.instance.recordStage(
+        AppLocalizations.of(context)!.funnelStageFirstPick,
+        _liked.length,
+      );
       DecisionResumeService.instance.clear();
       setState(() => _done = true);
     } else {
@@ -166,7 +259,10 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
         'swipe',
         widget.locationName,
       );
-      DecisionSessionService.instance.recordStage('오늘의 픽', 1);
+      DecisionSessionService.instance.recordStage(
+        AppLocalizations.of(context)!.funnelStageTodaysPick,
+        1,
+      );
       DecisionResumeService.instance.clear();
       context.push('/result', extra: {'restaurant': r});
     } else if (likedList.length >= 2) {
@@ -199,7 +295,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     final progress = _restaurants.isNotEmpty
         ? (_index + 1) / _restaurants.length
         : 0.0;
-    final webUrl = _buildWebUrl(current);
+    final t = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: _kBgTeal,
@@ -311,14 +407,16 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                             borderRadius: BorderRadius.circular(20),
                             child: Container(
                               color: const Color(0xFFF0F0F0),
-                              child: KakaoWebView(uri: webUrl),
+                              child: _SwipeCard(restaurant: current),
                             ),
                           ),
                           if (_choiceCount > 0)
                             Positioned(
                               top: 10,
                               left: 10,
-                              child: _badge('🔥 오늘 $_choiceCount명이 선택!'),
+                              child: _badge(
+                                t.swipeChoiceCountBadge(_choiceCount),
+                              ),
                             ),
                           if (_swipeDir == 'pass')
                             Positioned.fill(
@@ -333,7 +431,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                             right: 10,
                             child: GestureDetector(
                               onTap: () => _goToResult([current]),
-                              child: _badge('⭐ 오늘의 픽!'),
+                              child: _badge(t.swipeTodaysPickBadge),
                             ),
                           ),
                         ],
@@ -365,10 +463,10 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                     ],
                   ),
                 ),
-                _buildBottomCta(),
+                _buildBottomCta(t),
               ],
             ),
-            if (_done) _buildDoneOverlay(),
+            if (_done) _buildDoneOverlay(t),
           ],
         ),
       ),
@@ -456,25 +554,25 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     );
   }
 
-  Widget _buildBottomCta() {
+  Widget _buildBottomCta(AppLocalizations t) {
     Widget cta;
     if (_liked.isEmpty) {
       cta = _ctaButton(
-        '토너먼트 시작 불가',
+        t.swipeCantStartTournament,
         const Color(0xFFE5E7EB),
         const Color(0xFF9CA3AF),
         null,
       );
     } else if (_liked.length == 1) {
       cta = _ctaButton(
-        '🏆 바로 우승! (1개 선택)',
+        t.swipeInstantWin,
         _kOrange,
         Colors.white,
         () => _goToResult(_liked),
       );
     } else {
       cta = _ctaButton(
-        '토너먼트 바로 진행하기 (${_liked.length}개)',
+        t.swipeStartTournamentWithCount(_liked.length),
         _kBgTeal,
         Colors.white,
         () => _goToResult(_liked),
@@ -514,7 +612,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
     );
   }
 
-  Widget _buildDoneOverlay() {
+  Widget _buildDoneOverlay(AppLocalizations t) {
     return Container(
       color: Colors.black.withValues(alpha: 0.55),
       alignment: Alignment.bottomCenter,
@@ -530,22 +628,22 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              '선택한 가게 목록',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
+            Text(
+              t.swipeSelectedListTitle,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w800),
             ),
             const Divider(height: 24),
             Flexible(
               child: _liked.isEmpty
-                  ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 20),
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20),
                       child: Column(
                         children: [
-                          Text('😅', style: TextStyle(fontSize: 40)),
-                          SizedBox(height: 8),
+                          const Text('😅', style: TextStyle(fontSize: 40)),
+                          const SizedBox(height: 8),
                           Text(
-                            '선택한 가게가 없어요',
-                            style: TextStyle(color: Color(0xFF9CA3AF)),
+                            t.swipeNoSelections,
+                            style: const TextStyle(color: Color(0xFF9CA3AF)),
                           ),
                         ],
                       ),
@@ -597,17 +695,17 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                 width: double.infinity,
                 child: OutlinedButton(
                   onPressed: _openSaveModal,
-                  child: const Text('🗂 보관함에 추가하기'),
+                  child: Text(t.swipeAddToLibraryButton),
                 ),
               ),
               const SizedBox(height: 10),
             ],
-            _buildBottomCta(),
+            _buildBottomCta(t),
             TextButton(
               onPressed: () => context.go('/'),
-              child: const Text(
-                '홈화면으로 이동하기',
-                style: TextStyle(color: Color(0xFF6B7280)),
+              child: Text(
+                t.swipeGoHomeButton,
+                style: const TextStyle(color: Color(0xFF6B7280)),
               ),
             ),
           ],
@@ -639,6 +737,7 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
   Widget build(BuildContext context) {
     final lists = ref.watch(libraryProvider).lists;
     final places = widget.liked.map(_toPlace).toList();
+    final t = AppLocalizations.of(context)!;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -650,9 +749,9 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            '보관함에 추가하기',
-            style: TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
+          Text(
+            t.swipeAddToLibrarySheetTitle,
+            style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 16),
           Row(
@@ -663,7 +762,7 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
                       ? null
                       : () => setState(() => _newMode = false),
                   child: Text(
-                    '기존 보관함에 추가',
+                    t.swipeAddToExisting,
                     style: TextStyle(
                       fontWeight: _newMode
                           ? FontWeight.normal
@@ -676,7 +775,7 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
                 child: TextButton(
                   onPressed: () => setState(() => _newMode = true),
                   child: Text(
-                    '새 보관함 만들기',
+                    t.swipeCreateNewList,
                     style: TextStyle(
                       fontWeight: _newMode
                           ? FontWeight.w700
@@ -689,9 +788,9 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
           ),
           if (!_newMode)
             lists.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 20),
-                    child: Text('아직 보관함이 없어요'),
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20),
+                    child: Text(t.swipeNoListsYet),
                   )
                 : ConstrainedBox(
                     constraints: const BoxConstraints(maxHeight: 240),
@@ -705,15 +804,15 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
                               style: TextStyle(fontSize: 20),
                             ),
                             title: Text(list.title),
-                            subtitle: Text('가게 ${list.count}개'),
+                            subtitle: Text(t.searchPlaceCount(list.count)),
                             onTap: () {
                               ref
                                   .read(libraryProvider.notifier)
                                   .addPlacesToList(list.id, places);
                               Navigator.pop(context);
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('보관함에 가게가 추가되었어요!'),
+                                SnackBar(
+                                  content: Text(t.swipeAddedToLibraryMessage),
                                 ),
                               );
                             },
@@ -727,7 +826,7 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
                 TextField(
                   controller: _nameController,
                   maxLength: 30,
-                  decoration: const InputDecoration(hintText: '보관함 이름을 입력해주세요'),
+                  decoration: InputDecoration(hintText: t.swipeNewListNameHint),
                 ),
                 SizedBox(
                   width: double.infinity,
@@ -741,18 +840,20 @@ class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
                       if (context.mounted) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('"$name" 보관함이 만들어졌어요!')),
+                          SnackBar(
+                            content: Text(t.swipeListCreatedMessage(name)),
+                          ),
                         );
                       }
                     },
-                    child: Text('보관함 만들고 저장하기 (${places.length}개)'),
+                    child: Text(t.swipeCreateAndSaveButton(places.length)),
                   ),
                 ),
               ],
             ),
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(t.commonCancel),
           ),
         ],
       ),
