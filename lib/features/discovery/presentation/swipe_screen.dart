@@ -347,6 +347,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
           );
     });
     await _exitController.forward(from: 0);
+    if (!mounted) return;
     _advance(like);
     _exitController.value = 0;
     setState(() {
@@ -364,6 +365,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
       );
     });
     await _exitController.forward(from: 0);
+    if (!mounted) return;
     _exitController.value = 0;
     setState(() {
       _dragDx = 0;
@@ -820,6 +822,12 @@ class _SaveToLibrarySheet extends ConsumerStatefulWidget {
 class _SaveToLibrarySheetState extends ConsumerState<_SaveToLibrarySheet> {
   late bool _newMode = widget.startInNewMode;
   final _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

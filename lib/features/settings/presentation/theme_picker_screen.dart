@@ -106,7 +106,7 @@ class _ThemeOption extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: Text(
-                palette.labelKo,
+                palette.label(Localizations.localeOf(context)),
                 style: const TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.w600,

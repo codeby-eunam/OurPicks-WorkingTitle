@@ -24,7 +24,7 @@ class SettingsScreen extends ConsumerWidget {
     final languageValue = locale.languageCode == 'ko'
         ? t.languageKorean
         : t.languageEnglish;
-    final themeValue = AppPalettes.byId(paletteId).labelKo;
+    final themeValue = AppPalettes.byId(paletteId).label(locale);
 
     return Scaffold(
       appBar: AppBar(title: Text(t.settingsTitle)),

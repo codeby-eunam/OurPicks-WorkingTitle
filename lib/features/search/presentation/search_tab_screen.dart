@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/place.dart';
 import '../../library/data/library_api.dart';
 
@@ -44,6 +45,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
   @override
   Widget build(BuildContext context) {
     final filtered = _filtered;
+    final t = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -58,7 +60,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '공개 보관함 탐색',
+                        t.searchExploreTitle,
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w700,
@@ -67,7 +69,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '다른 사람들이 공유한 맛집 리스트',
+                        t.searchExploreSubtitle,
                         style: TextStyle(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -81,7 +83,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                   child: TextField(
                     onChanged: (v) => setState(() => _query = v),
                     decoration: InputDecoration(
-                      hintText: '보관함 이름으로 검색...',
+                      hintText: t.searchHint,
                       prefixIcon: const Icon(
                         Icons.search,
                         size: 20,
@@ -113,7 +115,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 Text('🔒', style: TextStyle(fontSize: 52)),
                                 SizedBox(height: 10),
                                 Text(
-                                  '공개된 보관함이 없어요',
+                                  t.searchEmptyPublicTitle,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
@@ -122,7 +124,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 ),
                                 SizedBox(height: 6),
                                 Text(
-                                  '내 보관함 탭에서 보관함을 공개로 설정하면\n여기에 나타나요',
+                                  t.searchEmptyPublicMessage,
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
@@ -139,7 +141,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 Text('🔍', style: TextStyle(fontSize: 52)),
                                 SizedBox(height: 10),
                                 Text(
-                                  '검색 결과가 없어요',
+                                  t.searchEmptyResultsTitle,
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.w700,
@@ -148,7 +150,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 ),
                                 SizedBox(height: 6),
                                 Text(
-                                  '다른 키워드로 검색해보세요',
+                                  t.searchEmptyResultsMessage,
                                   style: TextStyle(
                                     color: AppColors.textSecondary,
                                   ),
@@ -171,7 +173,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  '공개 보관함 ${filtered.length}개',
+                                  t.searchPublicListCount(filtered.length),
                                   style: const TextStyle(
                                     fontSize: 13,
                                     fontWeight: FontWeight.w600,
@@ -193,7 +195,7 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                               childAspectRatio: 0.62,
                               children: [
                                 for (final item in filtered)
-                                  _PublicListCard(item: item),
+                                  _PublicListCard(item: item, t: t),
                               ],
                             ),
                           ),
@@ -220,21 +222,21 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
                                 ),
                               ),
                               const SizedBox(width: 12),
-                              const Expanded(
+                              Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '내 보관함도 공유해보세요!',
-                                      style: TextStyle(
+                                      t.searchSharePromptTitle,
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w700,
                                       ),
                                     ),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text(
-                                      '내 보관함 탭에서 토글을 켜면\n공개 보관함으로 등록돼요',
-                                      style: TextStyle(
+                                      t.searchSharePromptMessage,
+                                      style: const TextStyle(
                                         fontSize: 12,
                                         color: Color(0xFF4B5563),
                                       ),
@@ -259,9 +261,10 @@ class _SearchTabScreenState extends State<SearchTabScreen> {
 }
 
 class _PublicListCard extends StatelessWidget {
-  const _PublicListCard({required this.item});
+  const _PublicListCard({required this.item, required this.t});
 
   final ListItem item;
+  final AppLocalizations t;
 
   @override
   Widget build(BuildContext context) {
@@ -303,14 +306,14 @@ class _PublicListCard extends StatelessWidget {
                       color: AppColors.secondary,
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.public, size: 10, color: Colors.white),
-                        SizedBox(width: 3),
+                        const Icon(Icons.public, size: 10, color: Colors.white),
+                        const SizedBox(width: 3),
                         Text(
-                          '공개',
-                          style: TextStyle(
+                          t.commonPublic,
+                          style: const TextStyle(
                             fontSize: 10,
                             fontWeight: FontWeight.w700,
                             color: Colors.white,
@@ -348,7 +351,7 @@ class _PublicListCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        '가게 ${item.count}개',
+                        t.searchPlaceCount(item.count),
                         style: TextStyle(
                           fontSize: 12,
                           color: AppColors.textSecondary,

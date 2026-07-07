@@ -7,6 +7,7 @@ class ThemePalette {
   const ThemePalette({
     required this.id,
     required this.labelKo,
+    required this.labelEn,
     required this.primary,
     required this.secondary,
     required this.background,
@@ -19,6 +20,7 @@ class ThemePalette {
 
   final ThemePaletteId id;
   final String labelKo;
+  final String labelEn;
   final Color primary;
   final Color secondary;
   final Color background;
@@ -27,6 +29,8 @@ class ThemePalette {
   final Color textPrimary;
   final Color textSecondary;
   final Color border;
+
+  String label(Locale locale) => locale.languageCode == 'ko' ? labelKo : labelEn;
 }
 
 class AppPalettes {
@@ -36,6 +40,7 @@ class AppPalettes {
   static const a = ThemePalette(
     id: ThemePaletteId.a,
     labelKo: '번트 오렌지',
+    labelEn: 'Burnt Orange',
     primary: Color(0xFFB5652D),
     secondary: Color(0xFF1E7874),
     background: Color(0xFFF7F5F1),
@@ -50,6 +55,7 @@ class AppPalettes {
   static const b = ThemePalette(
     id: ThemePaletteId.b,
     labelKo: '딥 테라코타',
+    labelEn: 'Deep Terracotta',
     primary: Color(0xFF8B3A2A),
     secondary: Color(0xFF1E7874),
     background: Color(0xFFF5F3EE),
@@ -64,6 +70,7 @@ class AppPalettes {
   static const c = ThemePalette(
     id: ThemePaletteId.c,
     labelKo: '딥그린 + 오프화이트',
+    labelEn: 'Deep Green + Off-White',
     primary: Color(0xFF1F3D2B),
     secondary: Color(0xFF1E7874),
     background: Color(0xFFF4F3EF),

@@ -79,6 +79,231 @@
   "navProfile": "Profile",
   "@navProfile": {},
 
+  "commonConfirm": "OK",
+  "@commonConfirm": {},
+
+  "homeFilterAll": "All",
+  "@homeFilterAll": {},
+
+  "homeFilterKorean": "Korean",
+  "@homeFilterKorean": {},
+
+  "homeFilterJapanese": "Japanese",
+  "@homeFilterJapanese": {},
+
+  "homeFilterChinese": "Chinese",
+  "@homeFilterChinese": {},
+
+  "homeFilterWestern": "Western",
+  "@homeFilterWestern": {},
+
+  "homeFilterSnack": "Snacks",
+  "@homeFilterSnack": {},
+
+  "homeFilterAsian": "Asian",
+  "@homeFilterAsian": {},
+
+  "homeFilterCafe": "Cafe",
+  "@homeFilterCafe": {},
+
+  "homeTagline": "Don't overthink it, just eat well!",
+  "@homeTagline": {},
+
+  "homeLocationPermissionTitle": "Location permission needed",
+  "@homeLocationPermissionTitle": {},
+
+  "homeLocationPermissionMessage": "Please allow location access to use your current location.",
+  "@homeLocationPermissionMessage": {},
+
+  "homeErrorTitle": "Error",
+  "@homeErrorTitle": {},
+
+  "homeLocationFetchError": "Failed to get your location.",
+  "@homeLocationFetchError": {},
+
+  "homeCurrentLocationLabel": "Current location",
+  "@homeCurrentLocationLabel": {},
+
+  "homeNearSuffix": "Near {name}",
+  "@homeNearSuffix": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "homeLocationErrorTitle": "Location error",
+  "@homeLocationErrorTitle": {},
+
+  "homeLocationNotFoundMessage": "Couldn't find that location. Please set it again from search.",
+  "@homeLocationNotFoundMessage": {},
+
+  "homeLocationConfirmError": "Failed to confirm location.",
+  "@homeLocationConfirmError": {},
+
+  "homeResumeBannerToday": "Today",
+  "@homeResumeBannerToday": {},
+
+  "homeResumeBannerYesterday": "Yesterday",
+  "@homeResumeBannerYesterday": {},
+
+  "homeResumeBannerDaysAgo": "{days} days ago",
+  "@homeResumeBannerDaysAgo": {
+    "placeholders": {
+      "days": {"type": "int"}
+    }
+  },
+
+  "homeResumeBannerFallbackLocation": "that spot",
+  "@homeResumeBannerFallbackLocation": {},
+
+  "homeResumeBannerQuestion": "Continue your {day} decision near {location}?",
+  "@homeResumeBannerQuestion": {
+    "placeholders": {
+      "day": {"type": "String"},
+      "location": {"type": "String"}
+    }
+  },
+
+  "homeResumeBannerRemaining": "{count} left to choose",
+  "@homeResumeBannerRemaining": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "homeResumeContinueButton": "Continue",
+  "@homeResumeContinueButton": {},
+
+  "homeLocatingLabel": "Getting location...",
+  "@homeLocatingLabel": {},
+
+  "homeStartButton": "Start",
+  "@homeStartButton": {},
+
+  "homeSearchModalTitle": "Search location",
+  "@homeSearchModalTitle": {},
+
+  "homeSearchHint": "Search by region or address",
+  "@homeSearchHint": {},
+
+  "homeUseCurrentLocation": "Use current location",
+  "@homeUseCurrentLocation": {},
+
+  "homeNoSearchResults": "No results found.",
+  "@homeNoSearchResults": {},
+
+  "homeRecentSearchesLabel": "Recent searches",
+  "@homeRecentSearchesLabel": {},
+
+  "homeClearAllButton": "Clear all",
+  "@homeClearAllButton": {},
+
+  "homeNoRecentSearches": "No recent searches.",
+  "@homeNoRecentSearches": {},
+
+  "profileLoginRequiredTitle": "Login required",
+  "@profileLoginRequiredTitle": {},
+
+  "profileLoginRequiredDescription": "Sign in with a social account\nto use your profile page",
+  "@profileLoginRequiredDescription": {},
+
+  "profileStatLibrary": "Lists",
+  "@profileStatLibrary": {},
+
+  "profileStatPublicList": "Public lists",
+  "@profileStatPublicList": {},
+
+  "profileSectionHistory": "My History",
+  "@profileSectionHistory": {},
+
+  "profileMenuMySelections": "My picks",
+  "@profileMenuMySelections": {},
+
+  "profileSectionSettings": "Settings",
+  "@profileSectionSettings": {},
+
+  "profileMenuEditProfile": "Edit profile",
+  "@profileMenuEditProfile": {},
+
+  "profileMenuAppSettings": "App settings",
+  "@profileMenuAppSettings": {},
+
+  "profileLogoutButton": "Log out",
+  "@profileLogoutButton": {},
+
+  "profileLogoutConfirmMessage": "Are you sure you want to log out?",
+  "@profileLogoutConfirmMessage": {},
+
+  "profileJoinDate": "Joined {date}",
+  "@profileJoinDate": {
+    "placeholders": {
+      "date": {"type": "String"}
+    }
+  },
+
+  "searchExploreTitle": "Explore Public Lists",
+  "@searchExploreTitle": {},
+
+  "searchExploreSubtitle": "Lists other people have shared",
+  "@searchExploreSubtitle": {},
+
+  "searchHint": "Search by list name...",
+  "@searchHint": {},
+
+  "searchEmptyPublicTitle": "No public lists yet",
+  "@searchEmptyPublicTitle": {},
+
+  "searchEmptyPublicMessage": "Turn on the public toggle in your Library tab\nand it'll show up here",
+  "@searchEmptyPublicMessage": {},
+
+  "searchEmptyResultsTitle": "No results found",
+  "@searchEmptyResultsTitle": {},
+
+  "searchEmptyResultsMessage": "Try a different keyword",
+  "@searchEmptyResultsMessage": {},
+
+  "searchPublicListCount": "{count} public lists",
+  "@searchPublicListCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "searchSharePromptTitle": "Share your library too!",
+  "@searchSharePromptTitle": {},
+
+  "searchSharePromptMessage": "Turn on the toggle in your Library tab\nto make a list public",
+  "@searchSharePromptMessage": {},
+
+  "mySelectionsTitle": "My Picks",
+  "@mySelectionsTitle": {},
+
+  "mySelectionsErrorMessage": "Something went wrong while loading.",
+  "@mySelectionsErrorMessage": {},
+
+  "mySelectionsRetryButton": "Try again",
+  "@mySelectionsRetryButton": {},
+
+  "mySelectionsEmptyTitle": "No picks yet",
+  "@mySelectionsEmptyTitle": {},
+
+  "mySelectionsEmptyMessage": "Use Dangmatch to pick a restaurant!",
+  "@mySelectionsEmptyMessage": {},
+
+  "mySelectionsTodaySection": "Today's picks",
+  "@mySelectionsTodaySection": {},
+
+  "mySelectionsEarlierSection": "Earlier",
+  "@mySelectionsEarlierSection": {},
+
+  "mySelectionsSectionCount": "{title} · {count}",
+  "@mySelectionsSectionCount": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "count": {"type": "int"}
+    }
+  },
+
   "searchPlaceCount": "{count} places",
   "@searchPlaceCount": {
     "placeholders": {

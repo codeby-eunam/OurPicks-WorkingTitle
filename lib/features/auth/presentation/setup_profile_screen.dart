@@ -49,7 +49,15 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   }
 
   void _onUserIdChanged(String value) {
-    if (!value.startsWith('@')) return; // @ 제거 방지
+    if (!value.startsWith('@')) {
+      // @ 제거 방지: 되돌리고 다시 build()를 트리거해 버튼 상태를 갱신한다.
+      _userIdController.value = const TextEditingValue(
+        text: '@',
+        selection: TextSelection.collapsed(offset: 1),
+      );
+      setState(() => _userIdError = '');
+      return;
+    }
     final lower = value.toLowerCase();
     if (lower != value) {
       final selection = _userIdController.selection;
@@ -88,6 +96,12 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
         setState(() => _userIdError = '이미 사용 중인 아이디예요. 다른 아이디를 입력해주세요.');
         return;
       }
+    } catch (err) {
+      _showAlert(
+        '오류',
+        '아이디 확인에 실패했습니다.\n${err.toString().replaceFirst('Exception: ', '')}',
+      );
+      return;
     } finally {
       if (mounted) setState(() => _checking = false);
     }
@@ -116,6 +130,7 @@ class _SetupProfileScreenState extends ConsumerState<SetupProfileScreen> {
   }
 
   void _showAlert(String title, String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(

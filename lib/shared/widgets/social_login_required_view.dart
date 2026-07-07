@@ -33,10 +33,7 @@ class _SocialLoginRequiredViewState
     setState(() => _loadingProvider = provider);
     try {
       final result = await ref.read(userProvider.notifier).loginWith(provider);
-      if (result == null) {
-        setState(() => _loadingProvider = null);
-        return;
-      }
+      if (result == null) return;
       if (!mounted) return;
       if (result.needsSetup) {
         context.push(

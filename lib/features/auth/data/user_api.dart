@@ -56,8 +56,10 @@ class UserApi {
         queryParameters: {'userId': userId},
       );
       return response.data['available'] == true;
+    } on DioException catch (e) {
+      throw Exception(_extractError(e));
     } catch (_) {
-      return true;
+      throw Exception('잘못된 응답 형식입니다.');
     }
   }
 

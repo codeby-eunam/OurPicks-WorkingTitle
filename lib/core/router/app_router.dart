@@ -99,8 +99,15 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/mode-select',
+      redirect: (context, state) {
+        final extra = state.extra as Map?;
+        if (extra == null || extra['lat'] is! num || extra['lng'] is! num) {
+          return '/';
+        }
+        return null;
+      },
       builder: (context, state) {
-        final extra = (state.extra as Map?) ?? const {};
+        final extra = state.extra as Map;
         return ModeSelectScreen(
           lat: (extra['lat'] as num).toDouble(),
           lng: (extra['lng'] as num).toDouble(),
@@ -111,8 +118,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/swipe',
+      redirect: (context, state) {
+        final extra = state.extra as Map?;
+        if (extra == null || extra['restaurants'] is! List) return '/';
+        return null;
+      },
       builder: (context, state) {
-        final extra = (state.extra as Map?) ?? const {};
+        final extra = state.extra as Map;
         return SwipeScreen(
           restaurants: (extra['restaurants'] as List).cast<Restaurant>(),
           locationName: extra['locationName']?.toString() ?? '',
@@ -123,8 +135,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/tournament',
+      redirect: (context, state) {
+        final extra = state.extra as Map?;
+        if (extra == null || extra['restaurants'] is! List) return '/';
+        return null;
+      },
       builder: (context, state) {
-        final extra = (state.extra as Map?) ?? const {};
+        final extra = state.extra as Map;
         return TournamentScreen(
           restaurants: (extra['restaurants'] as List).cast<Restaurant>(),
           locationName: extra['locationName']?.toString() ?? '',
@@ -133,8 +150,13 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: '/result',
+      redirect: (context, state) {
+        final extra = state.extra as Map?;
+        if (extra == null || extra['restaurant'] is! Restaurant) return '/';
+        return null;
+      },
       builder: (context, state) {
-        final extra = (state.extra as Map?) ?? const {};
+        final extra = state.extra as Map;
         return ResultScreen(winner: extra['restaurant'] as Restaurant);
       },
     ),

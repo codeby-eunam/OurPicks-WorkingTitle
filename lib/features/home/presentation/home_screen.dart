@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/storage/local_store.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/services/analytics_service.dart';
 import '../../../shared/services/restaurant_api.dart';
@@ -17,14 +18,14 @@ import '../../discovery/application/decision_session.dart';
 import '../../settings/application/locale_notifier.dart';
 
 const _kFoodFilters = [
-  (id: 'all', label: '전체', emoji: '🍽️'),
-  (id: 'korean', label: '한식', emoji: '🍚'),
-  (id: 'japanese', label: '일식', emoji: '🍣'),
-  (id: 'chinese', label: '중식', emoji: '🥢'),
-  (id: 'western', label: '양식', emoji: '🍝'),
-  (id: 'snack', label: '분식', emoji: '🍢'),
-  (id: 'asian', label: '아시안', emoji: '🍜'),
-  (id: 'cafe', label: '카페', emoji: '☕'),
+  (id: 'all', emoji: '🍽️'),
+  (id: 'korean', emoji: '🍚'),
+  (id: 'japanese', emoji: '🍣'),
+  (id: 'chinese', emoji: '🥢'),
+  (id: 'western', emoji: '🍝'),
+  (id: 'snack', emoji: '🍢'),
+  (id: 'asian', emoji: '🍜'),
+  (id: 'cafe', emoji: '☕'),
 ];
 
 /// Port of app/(tabs)/index.tsx: location + category select → mode-select.
@@ -48,6 +49,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   List<String> _recentSearches = [];
   Timer? _debounce;
   ResumableSession? _resumeSession;
+
+  AppLocalizations get _t => AppLocalizations.of(context)!;
 
   @override
   void initState() {
@@ -156,7 +159,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        _showAlert('위치 권한 필요', '위치 권한을 허용해야 현재 위치를 사용할 수 있습니다.');
+        _showAlert(
+          _t.homeLocationPermissionTitle,
+          _t.homeLocationPermissionMessage,
+        );
         return;
       }
 
@@ -165,6 +171,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           accuracy: LocationAccuracy.medium,
         ),
       );
+      if (!mounted) return;
       _locationCoords = (lat: position.latitude, lng: position.longitude);
 
       try {
@@ -178,18 +185,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           place?.locality,
         ].whereType<String>().where((s) => s.isNotEmpty);
         final label = parts.join(' ');
-        setState(() => _location = label.isNotEmpty ? '$label 근처' : '현재 위치');
+        if (mounted) {
+          setState(
+            () => _location = label.isNotEmpty
+                ? _t.homeNearSuffix(label)
+                : _t.homeCurrentLocationLabel,
+          );
+        }
       } catch (_) {
-        setState(() => _location = '현재 위치');
+        if (mounted) setState(() => _location = _t.homeCurrentLocationLabel);
       }
     } catch (_) {
-      _showAlert('오류', '위치를 가져오는 데 실패했습니다.');
+      _showAlert(_t.homeErrorTitle, _t.homeLocationFetchError);
     } finally {
       if (mounted) setState(() => _locating = false);
     }
   }
 
+  /// homeNearSuffix wraps the raw place name differently per locale
+  /// ("Near {name}" vs "{name} 근처"), so strip whichever wrapping is active
+  /// to recover the bare name for re-searching.
+  String _stripNearSuffix(String location) {
+    final wrapper = _t.homeNearSuffix('');
+    if (wrapper.isEmpty) return location;
+    if (location.startsWith(wrapper)) return location.substring(wrapper.length);
+    if (location.endsWith(wrapper)) {
+      return location.substring(0, location.length - wrapper.length);
+    }
+    return location;
+  }
+
   void _showAlert(String title, String message) {
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -198,7 +225,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('확인'),
+            child: Text(_t.commonConfirm),
           ),
         ],
       ),
@@ -228,6 +255,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       LocalStore.keyRecentLocationSearches,
       updated,
     );
+    if (!mounted) return;
     AnalyticsService.instance.logLocationSearched(
       _searchController.text.isNotEmpty ? _searchController.text : name,
       _searchResults.length,
@@ -264,13 +292,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     try {
       var coords = _locationCoords;
       if (coords == null) {
-        final query = _location.replaceAll(' 근처', '');
+        final query = _stripNearSuffix(_location);
         final results = await RestaurantApi().searchLocation(query);
+        if (!mounted) return;
         if (results.isNotEmpty) {
           coords = (lat: results.first.lat, lng: results.first.lng);
           setState(() => _locationCoords = coords);
         } else {
-          _showAlert('위치 오류', '위치를 찾을 수 없습니다. 검색창에서 위치를 다시 설정해주세요.');
+          _showAlert(_t.homeLocationErrorTitle, _t.homeLocationNotFoundMessage);
           return;
         }
       }
@@ -286,7 +315,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         },
       );
     } catch (_) {
-      _showAlert('오류', '위치 확인에 실패했습니다.');
+      _showAlert(_t.homeErrorTitle, _t.homeLocationConfirmError);
     } finally {
       if (mounted) setState(() => _startLoading = false);
     }
@@ -308,11 +337,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   _buildSearchBar(),
                   _buildFilterGrid(),
                   _buildStartButton(),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 14),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14),
                     child: Text(
-                      '고민하지 말고, 맛있게!',
-                      style: TextStyle(color: Color(0xFF6B7280), fontSize: 15),
+                      _t.homeTagline,
+                      style: const TextStyle(
+                        color: Color(0xFF6B7280),
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ],
@@ -333,16 +365,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       today.month,
       today.day,
     ).difference(DateTime(savedAt.year, savedAt.month, savedAt.day)).inDays;
-    if (diff <= 0) return '오늘';
-    if (diff == 1) return '어제';
-    return '$diff일 전';
+    if (diff <= 0) return _t.homeResumeBannerToday;
+    if (diff == 1) return _t.homeResumeBannerYesterday;
+    return _t.homeResumeBannerDaysAgo(diff);
   }
 
   Widget _buildResumeBanner(ResumableSession session) {
     final relativeDay = _relativeDay(session.savedAt);
     final locationLabel = session.locationName.isNotEmpty
         ? session.locationName
-        : '그때 그';
+        : _t.homeResumeBannerFallbackLocation;
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 16, 20, 0),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -360,7 +392,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$relativeDay $locationLabel 결정, 이어서 할까요?',
+                  _t.homeResumeBannerQuestion(relativeDay, locationLabel),
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
@@ -368,7 +400,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
                 Text(
-                  '후보 ${session.restaurants.length}곳 남음',
+                  _t.homeResumeBannerRemaining(session.restaurants.length),
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -377,7 +409,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ],
             ),
           ),
-          TextButton(onPressed: _resume, child: const Text('이어하기')),
+          TextButton(
+            onPressed: _resume,
+            child: Text(_t.homeResumeContinueButton),
+          ),
           IconButton(
             onPressed: _dismissResumeSession,
             icon: const Icon(Icons.close, size: 18, color: Color(0xFF9CA3AF)),
@@ -407,7 +442,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 8),
                 child: Text(
-                  _locating ? '위치 가져오는 중...' : _location,
+                  _locating ? _t.homeLocatingLabel : _location,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
                     fontSize: 15,
@@ -444,6 +479,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  String _filterLabel(String id) {
+    switch (id) {
+      case 'korean':
+        return _t.homeFilterKorean;
+      case 'japanese':
+        return _t.homeFilterJapanese;
+      case 'chinese':
+        return _t.homeFilterChinese;
+      case 'western':
+        return _t.homeFilterWestern;
+      case 'snack':
+        return _t.homeFilterSnack;
+      case 'asian':
+        return _t.homeFilterAsian;
+      case 'cafe':
+        return _t.homeFilterCafe;
+      default:
+        return _t.homeFilterAll;
+    }
+  }
+
   Widget _buildFilterGrid() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -458,7 +514,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           for (final f in _kFoodFilters)
             _FilterChip(
               emoji: f.emoji,
-              label: f.label,
+              label: _filterLabel(f.id),
               active: _selectedFilters.contains(f.id),
               onTap: () => _toggleFilter(f.id),
             ),
@@ -489,9 +545,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     strokeWidth: 2,
                   ),
                 )
-              : const Text(
-                  '시작하기',
-                  style: TextStyle(
+              : Text(
+                  _t.homeStartButton,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w700,
                     letterSpacing: 0.5,
@@ -522,11 +578,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       onPressed: _closeModal,
                       icon: const Icon(Icons.chevron_left, size: 26),
                     ),
-                    const Expanded(
+                    Expanded(
                       child: Text(
-                        '위치 검색',
+                        _t.homeSearchModalTitle,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 17,
                           fontWeight: FontWeight.w700,
                         ),
@@ -542,7 +598,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   controller: _searchController,
                   autofocus: true,
                   decoration: InputDecoration(
-                    hintText: '지역, 주소를 검색하세요',
+                    hintText: _t.homeSearchHint,
                     prefixIcon: const Icon(
                       Icons.search,
                       size: 18,
@@ -573,7 +629,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       const SizedBox(width: 10),
                       Text(
-                        '현재 위치 사용',
+                        _t.homeUseCurrentLocation,
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w600,
@@ -607,7 +663,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (_searchResults.isEmpty) {
       return Center(
         child: Text(
-          '검색 결과가 없습니다.',
+          _t.homeNoSearchResults,
           style: TextStyle(color: AppColors.textSecondary),
         ),
       );
@@ -625,7 +681,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           title: Text(item.placeName),
           subtitle: item.addressName.isNotEmpty ? Text(item.addressName) : null,
           onTap: () => _selectLocation(
-            '${item.placeName} 근처',
+            _t.homeNearSuffix(item.placeName),
             lat: item.lat,
             lng: item.lng,
           ),
@@ -644,7 +700,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '최근 검색',
+                  _t.homeRecentSearchesLabel,
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -653,7 +709,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
                 TextButton(
                   onPressed: _clearRecentSearches,
-                  child: const Text('전체 삭제', style: TextStyle(fontSize: 12)),
+                  child: Text(
+                    _t.homeClearAllButton,
+                    style: const TextStyle(fontSize: 12),
+                  ),
                 ),
               ],
             ),
@@ -663,7 +722,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.only(top: 40),
             child: Center(
               child: Text(
-                '최근 검색 기록이 없습니다.',
+                _t.homeNoRecentSearches,
                 style: TextStyle(color: AppColors.textSecondary),
               ),
             ),

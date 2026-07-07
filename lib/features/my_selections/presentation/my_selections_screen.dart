@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../auth/application/user_notifier.dart';
 import '../data/user_log_api.dart';
 
@@ -53,8 +54,9 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('나의 선택 기록')),
+      appBar: AppBar(title: Text(t.mySelectionsTitle)),
       body: Stack(
         children: [
           if (_loading)
@@ -67,11 +69,14 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    '불러오는 중 오류가 발생했어요.',
+                    t.mySelectionsErrorMessage,
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 8),
-                  ElevatedButton(onPressed: _fetch, child: const Text('다시 시도')),
+                  ElevatedButton(
+                    onPressed: _fetch,
+                    child: Text(t.mySelectionsRetryButton),
+                  ),
                 ],
               ),
             )
@@ -83,12 +88,12 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                   Text('🍽️', style: TextStyle(fontSize: 48)),
                   SizedBox(height: 8),
                   Text(
-                    '아직 선택한 맛집이 없어요',
+                    t.mySelectionsEmptyTitle,
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    '당맷치로 맛집을 골라보세요!',
+                    t.mySelectionsEmptyMessage,
                     style: TextStyle(color: AppColors.textSecondary),
                   ),
                 ],
@@ -107,13 +112,13 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
                   padding: const EdgeInsets.all(16),
                   children: [
                     if (today.isNotEmpty) ...[
-                      _buildSectionHeader('오늘의 결정', today.length),
+                      _buildSectionHeader(t.mySelectionsTodaySection, t, today.length),
                       const SizedBox(height: 10),
                       _buildLogCard(today),
                       const SizedBox(height: 20),
                     ],
                     if (earlier.isNotEmpty) ...[
-                      _buildSectionHeader('이전 기록', earlier.length),
+                      _buildSectionHeader(t.mySelectionsEarlierSection, t, earlier.length),
                       const SizedBox(height: 10),
                       _buildLogCard(earlier),
                     ],
@@ -126,9 +131,9 @@ class _MySelectionsScreenState extends ConsumerState<MySelectionsScreen> {
     );
   }
 
-  Widget _buildSectionHeader(String title, int count) {
+  Widget _buildSectionHeader(String title, AppLocalizations t, int count) {
     return Text(
-      '$title · $count개',
+      t.mySelectionsSectionCount(title, count),
       style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w700,

@@ -762,6 +762,12 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
   List<Place> _results = [];
   bool _searching = false;
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _search(String query) async {
     if (query.trim().isEmpty) {
       setState(() => _results = []);
@@ -774,6 +780,8 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
         setState(
           () => _results = restaurants.map(placeFromRestaurant).toList(),
         );
+    } catch (_) {
+      if (mounted) setState(() => _results = []);
     } finally {
       if (mounted) setState(() => _searching = false);
     }

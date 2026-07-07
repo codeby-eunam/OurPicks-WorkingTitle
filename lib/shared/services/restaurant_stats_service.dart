@@ -47,8 +47,8 @@ class RestaurantStatsService {
         final snap = await tx.get(ref);
         final data = snap.data() ?? {};
         final newWinCount = ((data['winCount'] as num?)?.toInt() ?? 0) + 1;
-        final tournamentCount =
-            ((data['tournamentCount'] as num?)?.toInt() ?? 1).clamp(1, 1 << 30);
+        final loseCount = (data['loseCount'] as num?)?.toInt() ?? 0;
+        final tournamentCount = (newWinCount + loseCount).clamp(1, 1 << 30);
         tx.set(ref, {
           'winCount': newWinCount,
           'winRate': newWinCount / tournamentCount,

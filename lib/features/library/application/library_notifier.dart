@@ -45,8 +45,10 @@ class LibraryNotifier extends Notifier<LibraryState> {
     state = state.copyWith(loading: true);
     try {
       final lists = await _api.fetchLists(uid);
+      if (_uid != uid) return;
       state = LibraryState(lists: lists, loading: false);
     } catch (_) {
+      if (_uid != uid) return;
       state = state.copyWith(loading: false);
     }
   }

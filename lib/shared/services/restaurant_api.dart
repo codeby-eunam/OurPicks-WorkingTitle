@@ -1,3 +1,5 @@
+import 'package:dio/dio.dart';
+
 import '../../core/network/api_client.dart';
 import '../models/restaurant.dart';
 
@@ -16,32 +18,44 @@ class RestaurantApi {
     int radius = 3000,
     int maxPages = 3,
   }) async {
-    final response = await _client.dio.get(
-      '/api/kakao/nearby',
-      queryParameters: {
-        'lat': lat,
-        'lng': lng,
-        'radius': radius,
-        'category': category,
-        'maxPages': maxPages,
-      },
-    );
+    try {
+      final response = await _client.dio.get(
+        '/api/kakao/nearby',
+        queryParameters: {
+          'lat': lat,
+          'lng': lng,
+          'radius': radius,
+          'category': category,
+          'maxPages': maxPages,
+        },
+      );
 
-    final documents = (response.data['documents'] as List? ?? [])
-        .cast<Map<String, dynamic>>();
-    return documents.map(Restaurant.fromJson).toList();
+      final documents = (response.data['documents'] as List? ?? [])
+          .cast<Map<String, dynamic>>();
+      return documents.map(Restaurant.fromJson).toList();
+    } on DioException catch (e) {
+      throw Exception(_extractError(e));
+    } catch (_) {
+      throw Exception('잘못된 응답 형식입니다.');
+    }
   }
 
   /// GET /api/kakao/search-location?query=
   Future<List<Restaurant>> searchLocation(String query) async {
-    final response = await _client.dio.get(
-      '/api/kakao/search-location',
-      queryParameters: {'query': query},
-    );
+    try {
+      final response = await _client.dio.get(
+        '/api/kakao/search-location',
+        queryParameters: {'query': query},
+      );
 
-    final documents = (response.data['documents'] as List? ?? [])
-        .cast<Map<String, dynamic>>();
-    return documents.map(Restaurant.fromJson).toList();
+      final documents = (response.data['documents'] as List? ?? [])
+          .cast<Map<String, dynamic>>();
+      return documents.map(Restaurant.fromJson).toList();
+    } on DioException catch (e) {
+      throw Exception(_extractError(e));
+    } catch (_) {
+      throw Exception('잘못된 응답 형식입니다.');
+    }
   }
 
   /// GET /api/kakao/place-photo?id= — Kakao Local API returns no photo, so
@@ -57,5 +71,14 @@ class RestaurantApi {
     } catch (_) {
       return '';
     }
+  }
+
+  String _extractError(DioException e) {
+    final data = e.response?.data;
+    if (data is Map && data['error'] is String) return data['error'] as String;
+    if (data is Map && data['message'] is String) {
+      return data['message'] as String;
+    }
+    return '서버 오류 (${e.response?.statusCode ?? '?'})';
   }
 }

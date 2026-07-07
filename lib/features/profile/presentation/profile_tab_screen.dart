@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/widgets/social_login_required_view.dart';
 import '../../auth/application/user_notifier.dart';
 import '../../library/application/library_notifier.dart';
@@ -15,14 +16,15 @@ class ProfileTabScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final userState = ref.watch(userProvider);
+    final t = AppLocalizations.of(context)!;
 
     if (!userState.isLoggedIn) {
-      return const Scaffold(
+      return Scaffold(
         body: SafeArea(
           child: SocialLoginRequiredView(
             emoji: '🔒',
-            title: '로그인이 필요해요',
-            description: '마이페이지를 이용하려면\n소셜 로그인이 필요합니다',
+            title: t.profileLoginRequiredTitle,
+            description: t.profileLoginRequiredDescription,
           ),
         ),
       );
@@ -91,28 +93,34 @@ class ProfileTabScreen extends ConsumerWidget {
                     padding: const EdgeInsets.symmetric(vertical: 20),
                     child: Row(
                       children: [
-                        _StatItem(label: '보관함', value: '${lists.length}'),
+                        _StatItem(
+                          label: t.profileStatLibrary,
+                          value: '${lists.length}',
+                        ),
                         const _StatDivider(),
-                        _StatItem(label: '공개 리스트', value: '$publicListCount'),
+                        _StatItem(
+                          label: t.profileStatPublicList,
+                          value: '$publicListCount',
+                        ),
                       ],
                     ),
                   ),
-                  _menuSection(context, '나의 기록', [
+                  _menuSection(context, t.profileSectionHistory, [
                     _MenuItem(
                       icon: '🍽️',
-                      label: '나의 선택 기록',
+                      label: t.profileMenuMySelections,
                       onTap: () => context.push('/my-selections'),
                     ),
                   ]),
-                  _menuSection(context, '설정', [
+                  _menuSection(context, t.profileSectionSettings, [
                     _MenuItem(
                       icon: '✏️',
-                      label: '프로필 수정',
+                      label: t.profileMenuEditProfile,
                       onTap: () => context.push('/edit-profile'),
                     ),
                     _MenuItem(
                       icon: '⚙️',
-                      label: '앱 설정',
+                      label: t.profileMenuAppSettings,
                       onTap: () => context.push('/settings'),
                     ),
                   ]),
@@ -124,7 +132,7 @@ class ProfileTabScreen extends ConsumerWidget {
                     child: SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
-                        onPressed: () => _confirmLogout(context, ref),
+                        onPressed: () => _confirmLogout(context, ref, t),
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(
                             color: Color(0xFFFCA5A5),
@@ -132,9 +140,9 @@ class ProfileTabScreen extends ConsumerWidget {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 15),
                         ),
-                        child: const Text(
-                          '로그아웃',
-                          style: TextStyle(
+                        child: Text(
+                          t.profileLogoutButton,
+                          style: const TextStyle(
                             color: AppColors.error,
                             fontWeight: FontWeight.w600,
                           ),
@@ -145,7 +153,11 @@ class ProfileTabScreen extends ConsumerWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 16),
                     child: Text(
-                      '가입일: ${DateFormat('yyyy. MM. dd').format(DateTime.tryParse(user.createdAt) ?? DateTime.now())}',
+                      t.profileJoinDate(
+                        DateFormat('yyyy. MM. dd').format(
+                          DateTime.tryParse(user.createdAt) ?? DateTime.now(),
+                        ),
+                      ),
                       style: const TextStyle(
                         fontSize: 12,
                         color: Color(0xFFD1D5DB),
@@ -202,23 +214,26 @@ class ProfileTabScreen extends ConsumerWidget {
     );
   }
 
-  void _confirmLogout(BuildContext context, WidgetRef ref) {
+  void _confirmLogout(BuildContext context, WidgetRef ref, AppLocalizations t) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('로그아웃'),
-        content: const Text('로그아웃 하시겠어요?'),
+        title: Text(t.profileLogoutButton),
+        content: Text(t.profileLogoutConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(t.commonCancel),
           ),
           TextButton(
             onPressed: () {
               ref.read(userProvider.notifier).logout();
               Navigator.pop(context);
             },
-            child: const Text('로그아웃', style: TextStyle(color: AppColors.error)),
+            child: Text(
+              t.profileLogoutButton,
+              style: const TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),

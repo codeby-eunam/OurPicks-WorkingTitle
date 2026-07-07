@@ -456,6 +456,13 @@ class _CreateListSheetState extends ConsumerState<_CreateListSheet> {
   bool _searching = false;
   bool _creating = false;
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
   Future<void> _handleSearch(String query) async {
     if (query.trim().isEmpty) {
       setState(() => _results = []);
