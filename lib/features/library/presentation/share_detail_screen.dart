@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/place.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../auth/application/user_notifier.dart';
@@ -20,6 +21,9 @@ Restaurant _placeToRestaurant(Place p) {
     x: '0',
     y: '0',
     placeUrl: p.placeUrl,
+    // p.image is either a real photo URL (already absolute) or the
+    // picsum.photos placeholder used when no real photo was ever fetched.
+    photoUrl: p.image.contains('picsum.photos') ? '' : p.image,
   );
 }
 
@@ -78,25 +82,29 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
         ),
       );
     }
+    final t = AppLocalizations.of(context)!;
     if (_error || _list == null) {
       return Scaffold(
         appBar: AppBar(),
-        body: const Center(
+        body: Center(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('🔒', style: TextStyle(fontSize: 48)),
-                SizedBox(height: 12),
+                const Text('🔒', style: TextStyle(fontSize: 48)),
+                const SizedBox(height: 12),
                 Text(
-                  '볼 수 없는 보관함이에요',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w700),
+                  t.shareNotViewableTitle,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-                SizedBox(height: 6),
+                const SizedBox(height: 6),
                 Text(
-                  '비공개이거나 존재하지 않는 보관함이에요',
-                  style: TextStyle(color: AppColors.textSecondary),
+                  t.shareNotViewableMessage,
+                  style: const TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -122,12 +130,15 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                   ),
                   const Spacer(),
                   OutlinedButton.icon(
-                    onPressed: () => _handleShare(list),
+                    onPressed: () => _handleShare(list, t),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                     ),
                     icon: const Icon(Icons.ios_share, size: 14),
-                    label: const Text('공유하기', style: TextStyle(fontSize: 13)),
+                    label: Text(
+                      t.libraryShareButton,
+                      style: const TextStyle(fontSize: 13),
+                    ),
                   ),
                   const SizedBox(width: 4),
                   ElevatedButton.icon(
@@ -201,7 +212,10 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                               ),
                               const SizedBox(width: 6),
                               Text(
-                                '${list.ownerUserId ?? '누군가'}의 찜 리스트',
+                                t.libraryOwnerWishlist(
+                                  list.ownerUserId ??
+                                      t.libraryOwnerFallbackName,
+                                ),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
@@ -220,7 +234,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                             ),
                           ),
                           Text(
-                            '찜한 최고의 맛집 리스트 (${list.places.length}곳)',
+                            t.libraryDescriptionGeneric(list.places.length),
                             style: const TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
@@ -319,11 +333,11 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
     );
   }
 
-  Future<void> _handleShare(ListItem list) async {
+  Future<void> _handleShare(ListItem list, AppLocalizations t) async {
     final token = list.shareToken ?? widget.shareToken;
     final url = 'https://dangmatch-y7al.vercel.app/share/$token';
     await SharePlus.instance.share(
-      ShareParams(text: 'Dangmatch에서 "${list.title}" 리스트를 확인해보세요!\n$url'),
+      ShareParams(text: t.shareCheckOutMessage(list.title, url)),
     );
   }
 }

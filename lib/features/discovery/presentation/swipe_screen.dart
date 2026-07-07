@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/network/api_client.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/place.dart';
 import '../../../shared/models/restaurant.dart';
@@ -27,7 +28,9 @@ Place _toPlace(Restaurant r) {
     category: isCafe ? '카페' : '식당',
     categoryName: categoryShort,
     address: r.roadAddressName.isNotEmpty ? r.roadAddressName : r.addressName,
-    image: 'https://picsum.photos/seed/${r.id}/200/200',
+    image: r.photoUrl.isNotEmpty
+        ? '$kApiBase${r.photoUrl}'
+        : 'https://picsum.photos/seed/${r.id}/200/200',
     placeUrl: r.placeUrl,
   );
 }
@@ -46,6 +49,13 @@ class _SwipeCard extends StatelessWidget {
     final address = r.roadAddressName.isNotEmpty
         ? r.roadAddressName
         : r.addressName;
+    // Fresh API results carry a relative proxy path; library round-trips
+    // (Place.image) are already absolute - don't double-prefix those.
+    final photoUrl = r.photoUrl.isEmpty
+        ? ''
+        : (r.photoUrl.startsWith('http')
+              ? r.photoUrl
+              : '$kApiBase${r.photoUrl}');
 
     return Container(
       color: Colors.white,
@@ -57,10 +67,28 @@ class _SwipeCard extends StatelessWidget {
             child: Container(
               color: _kBgTeal.withValues(alpha: 0.08),
               alignment: Alignment.center,
-              child: Text(
-                categoryEmojiFor(r.categoryName),
-                style: const TextStyle(fontSize: 96),
-              ),
+              child: photoUrl.isNotEmpty
+                  ? Image.network(
+                      photoUrl,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: double.infinity,
+                      loadingBuilder: (context, child, progress) =>
+                          progress == null
+                          ? child
+                          : Text(
+                              categoryEmojiFor(r.categoryName),
+                              style: const TextStyle(fontSize: 96),
+                            ),
+                      errorBuilder: (context, error, stackTrace) => Text(
+                        categoryEmojiFor(r.categoryName),
+                        style: const TextStyle(fontSize: 96),
+                      ),
+                    )
+                  : Text(
+                      categoryEmojiFor(r.categoryName),
+                      style: const TextStyle(fontSize: 96),
+                    ),
             ),
           ),
           Expanded(

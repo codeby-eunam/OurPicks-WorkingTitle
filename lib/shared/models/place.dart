@@ -1,3 +1,4 @@
+import '../../core/network/api_client.dart';
 import 'restaurant.dart';
 import 'restaurant_category.dart';
 
@@ -149,7 +150,9 @@ Place placeFromRestaurant(Restaurant r) {
     category: isCafe ? '카페' : '식당',
     categoryName: categoryShort.isEmpty ? '기타' : categoryShort,
     address: r.roadAddressName.isNotEmpty ? r.roadAddressName : r.addressName,
-    image: 'https://picsum.photos/seed/${r.id}/200/200',
+    image: r.photoUrl.isNotEmpty
+        ? '$kApiBase${r.photoUrl}'
+        : 'https://picsum.photos/seed/${r.id}/200/200',
     placeUrl: r.placeUrl,
   );
 }

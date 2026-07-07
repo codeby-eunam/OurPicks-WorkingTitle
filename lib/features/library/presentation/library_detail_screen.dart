@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/place.dart';
 import '../../../shared/models/restaurant.dart';
 import '../../../shared/services/restaurant_api.dart';
@@ -24,6 +25,9 @@ Restaurant _placeToRestaurant(Place p) {
     x: '0',
     y: '0',
     placeUrl: p.placeUrl,
+    // p.image is either a real photo URL (already absolute) or the
+    // picsum.photos placeholder used when no real photo was ever fetched.
+    photoUrl: p.image.contains('picsum.photos') ? '' : p.image,
   );
 }
 
@@ -41,6 +45,7 @@ class LibraryDetailScreen extends ConsumerWidget {
     final lists = libraryState.lists;
     final list = lists.where((l) => l.id == listId).firstOrNull;
     final user = ref.watch(userProvider).user;
+    final t = AppLocalizations.of(context)!;
 
     if (list == null) {
       // Lists may still be fetching (e.g. reached here directly from the
@@ -55,7 +60,7 @@ class LibraryDetailScreen extends ConsumerWidget {
       }
       return Scaffold(
         appBar: AppBar(),
-        body: const Center(child: Text('보관함을 찾을 수 없어요.')),
+        body: Center(child: Text(t.libraryDetailNotFound)),
       );
     }
 
@@ -83,14 +88,14 @@ class LibraryDetailScreen extends ConsumerWidget {
                       ),
                       const Spacer(),
                       OutlinedButton.icon(
-                        onPressed: () => _handleShare(list),
+                        onPressed: () => _handleShare(list, t),
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 6),
                         ),
                         icon: const Icon(Icons.ios_share, size: 14),
-                        label: const Text(
-                          '공유하기',
-                          style: TextStyle(fontSize: 13),
+                        label: Text(
+                          t.libraryShareButton,
+                          style: const TextStyle(fontSize: 13),
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -172,8 +177,11 @@ class LibraryDetailScreen extends ConsumerWidget {
                                   const SizedBox(width: 6),
                                   Text(
                                     isOwner
-                                        ? '나의 찜 리스트'
-                                        : '${list.ownerUserId ?? '누군가'}의 찜 리스트',
+                                        ? t.libraryMyWishlist
+                                        : t.libraryOwnerWishlist(
+                                            list.ownerUserId ??
+                                                t.libraryOwnerFallbackName,
+                                          ),
                                     style: const TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
@@ -217,7 +225,13 @@ class LibraryDetailScreen extends ConsumerWidget {
                                 ],
                               ),
                               Text(
-                                '${isOwner ? '내가 찜한' : '찜한'} 최고의 맛집 리스트 (${list.places.length}곳)',
+                                isOwner
+                                    ? t.libraryDescriptionMine(
+                                        list.places.length,
+                                      )
+                                    : t.libraryDescriptionGeneric(
+                                        list.places.length,
+                                      ),
                                 style: const TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
@@ -262,16 +276,17 @@ class LibraryDetailScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _handleShare(ListItem list) async {
+  Future<void> _handleShare(ListItem list, AppLocalizations t) async {
     final token = list.shareToken;
     if (token == null) return;
     final url = 'https://dangmatch-y7al.vercel.app/share/$token';
     await SharePlus.instance.share(
-      ShareParams(text: 'Dangmatch에서 "${list.title}" 리스트를 확인해보세요!\n$url'),
+      ShareParams(text: t.shareCheckOutMessage(list.title, url)),
     );
   }
 
   void _showOptions(BuildContext context, WidgetRef ref, ListItem list) {
+    final t = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -283,7 +298,7 @@ class LibraryDetailScreen extends ConsumerWidget {
           children: [
             ListTile(
               leading: const Icon(Icons.edit),
-              title: const Text('이름 수정'),
+              title: Text(t.libraryRenameTitle),
               onTap: () {
                 Navigator.pop(context);
                 _showRenameDialog(context, ref, list);
@@ -292,7 +307,7 @@ class LibraryDetailScreen extends ConsumerWidget {
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.swap_vert),
-              title: const Text('순서 바꾸기'),
+              title: Text(t.libraryReorderTitle),
               onTap: () {
                 Navigator.pop(context);
                 _openReorder(context, ref, list);
@@ -301,21 +316,21 @@ class LibraryDetailScreen extends ConsumerWidget {
             const Divider(height: 1),
             ListTile(
               leading: const Icon(Icons.delete_outline, color: AppColors.error),
-              title: const Text(
-                '보관함 삭제',
-                style: TextStyle(color: AppColors.error),
+              title: Text(
+                t.libraryDeleteTitle,
+                style: const TextStyle(color: AppColors.error),
               ),
               onTap: () {
                 Navigator.pop(context);
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('보관함 삭제'),
-                    content: Text('"${list.title}"을(를) 삭제할까요?'),
+                    title: Text(t.libraryDeleteTitle),
+                    content: Text(t.libraryDeleteConfirm(list.title)),
                     actions: [
                       TextButton(
                         onPressed: () => Navigator.pop(context),
-                        child: const Text('취소'),
+                        child: Text(t.commonCancel),
                       ),
                       TextButton(
                         onPressed: () {
@@ -325,9 +340,9 @@ class LibraryDetailScreen extends ConsumerWidget {
                           Navigator.pop(context);
                           context.pop();
                         },
-                        child: const Text(
-                          '삭제',
-                          style: TextStyle(color: AppColors.error),
+                        child: Text(
+                          t.commonDelete,
+                          style: const TextStyle(color: AppColors.error),
                         ),
                       ),
                     ],
@@ -342,11 +357,12 @@ class LibraryDetailScreen extends ConsumerWidget {
   }
 
   void _showRenameDialog(BuildContext context, WidgetRef ref, ListItem list) {
+    final t = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: list.title);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('이름 수정'),
+        title: Text(t.libraryRenameTitle),
         content: TextField(
           controller: controller,
           maxLength: 30,
@@ -355,7 +371,7 @@ class LibraryDetailScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('취소'),
+            child: Text(t.commonCancel),
           ),
           TextButton(
             onPressed: () {
@@ -364,7 +380,7 @@ class LibraryDetailScreen extends ConsumerWidget {
                 ref.read(libraryProvider.notifier).renameList(list.id, title);
               Navigator.pop(context);
             },
-            child: const Text('완료'),
+            child: Text(t.commonDone),
           ),
         ],
       ),
@@ -372,6 +388,7 @@ class LibraryDetailScreen extends ConsumerWidget {
   }
 
   void _openReorder(BuildContext context, WidgetRef ref, ListItem list) {
+    final t = AppLocalizations.of(context)!;
     var items = [...list.places];
     showModalBottomSheet(
       context: context,
@@ -391,9 +408,9 @@ class LibraryDetailScreen extends ConsumerWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        '순서 바꾸기',
-                        style: TextStyle(
+                      Text(
+                        t.libraryReorderTitle,
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w700,
                         ),
@@ -405,13 +422,13 @@ class LibraryDetailScreen extends ConsumerWidget {
                               .reorderPlaces(list.id, items);
                           Navigator.pop(context);
                         },
-                        child: const Text('완료'),
+                        child: Text(t.commonDone),
                       ),
                     ],
                   ),
                 ),
-                const Text(
-                  '드래그 핸들을 꾹 누른 채로 이동하세요',
+                Text(
+                  t.libraryReorderHint,
                   style: TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -500,7 +517,9 @@ class _VisibilityToggle extends StatelessWidget {
           ),
           const SizedBox(width: 5),
           Text(
-            isPublic ? '공개' : '비공개',
+            isPublic
+                ? AppLocalizations.of(context)!.commonPublic
+                : AppLocalizations.of(context)!.commonPrivate,
             style: TextStyle(
               fontSize: 12,
               fontWeight: isPublic ? FontWeight.w700 : FontWeight.w500,
@@ -527,7 +546,9 @@ class _VisibilityBadge extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
-        isPublic ? '공개' : '비공개',
+        isPublic
+            ? AppLocalizations.of(context)!.commonPublic
+            : AppLocalizations.of(context)!.commonPrivate,
         style: const TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
@@ -653,16 +674,17 @@ class _PlaceCard extends StatelessWidget {
   }
 
   void _confirmRemove(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => Consumer(
         builder: (context, ref, _) => AlertDialog(
-          title: const Text('가게 삭제'),
-          content: Text('"${place.name}"을(를) 이 보관함에서 삭제할까요?'),
+          title: Text(t.libraryDeletePlaceTitle),
+          content: Text(t.libraryDeletePlaceConfirm(place.name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text('취소'),
+              child: Text(t.commonCancel),
             ),
             TextButton(
               onPressed: () {
@@ -671,7 +693,10 @@ class _PlaceCard extends StatelessWidget {
                     .removePlaceFromList(listId, place.id);
                 Navigator.pop(context);
               },
-              child: const Text('삭제', style: TextStyle(color: AppColors.error)),
+              child: Text(
+                t.commonDelete,
+                style: const TextStyle(color: AppColors.error),
+              ),
             ),
           ],
         ),
@@ -709,9 +734,12 @@ class _AddPlaceCard extends StatelessWidget {
               child: const Icon(Icons.add, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 10),
-            const Text(
-              '새로운 맛집 추가',
-              style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
+            Text(
+              AppLocalizations.of(context)!.libraryAddPlaceLabel,
+              style: const TextStyle(
+                fontSize: 13,
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -754,6 +782,7 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
   @override
   Widget build(BuildContext context) {
     final existingIds = widget.list.places.map((p) => p.id).toSet();
+    final t = AppLocalizations.of(context)!;
     return DraggableScrollableSheet(
       initialChildSize: 0.9,
       expand: false,
@@ -769,15 +798,15 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
                       controller: _controller,
                       autofocus: true,
                       onChanged: _search,
-                      decoration: const InputDecoration(
-                        hintText: '가게 이름으로 검색...',
-                        prefixIcon: Icon(Icons.search),
+                      decoration: InputDecoration(
+                        hintText: t.libraryDetailSearchHint,
+                        prefixIcon: const Icon(Icons.search),
                       ),
                     ),
                   ),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('취소'),
+                    child: Text(t.commonCancel),
                   ),
                 ],
               ),
@@ -814,7 +843,7 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
                               onPressed: () => ref
                                   .read(libraryProvider.notifier)
                                   .addPlacesToList(widget.list.id, [place]),
-                              child: const Text('추가'),
+                              child: Text(t.commonAdd),
                             ),
                           ),
                       ],
@@ -830,6 +859,7 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
 class _BottomTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
     return Container(
       decoration: const BoxDecoration(
         color: Colors.white,
@@ -840,10 +870,16 @@ class _BottomTabBar extends StatelessWidget {
         top: false,
         child: Row(
           children: [
-            _tabItem(context, Icons.home_outlined, '홈', '/'),
-            _tabItem(context, Icons.search, '탐색', '/search'),
-            _tabItem(context, Icons.bookmark, '보관함', '/library', active: true),
-            _tabItem(context, Icons.person_outline, '마이', '/profile'),
+            _tabItem(context, Icons.home_outlined, t.navHome, '/'),
+            _tabItem(context, Icons.search, t.navExplore, '/search'),
+            _tabItem(
+              context,
+              Icons.bookmark,
+              t.navLibrary,
+              '/library',
+              active: true,
+            ),
+            _tabItem(context, Icons.person_outline, t.navProfile, '/profile'),
           ],
         ),
       ),
