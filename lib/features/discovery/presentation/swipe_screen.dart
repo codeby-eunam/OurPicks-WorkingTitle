@@ -587,30 +587,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
                     ),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8, bottom: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _actionButton(
-                        icon: Icons.close,
-                        color: Colors.white.withValues(alpha: 0.22),
-                        iconColor: Colors.white,
-                        label: 'PASS',
-                        onTap: () => _flingOff(false),
-                      ),
-                      const SizedBox(width: 28),
-                      _actionButton(
-                        icon: Icons.restaurant,
-                        color: _kOrange,
-                        iconColor: Colors.white,
-                        label: 'YUMI!',
-                        labelColor: _kOrange,
-                        onTap: () => _flingOff(true),
-                      ),
-                    ],
-                  ),
-                ),
+                const SizedBox(height: 12),
                 _buildBottomCta(t),
               ],
             ),
@@ -662,43 +639,6 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen>
           ),
         ),
       ),
-    );
-  }
-
-  Widget _actionButton({
-    required IconData icon,
-    required Color color,
-    required Color iconColor,
-    required String label,
-    Color labelColor = Colors.white,
-    required VoidCallback onTap,
-  }) {
-    return Column(
-      children: [
-        Material(
-          color: color,
-          shape: const CircleBorder(),
-          child: InkWell(
-            onTap: onTap,
-            customBorder: const CircleBorder(),
-            child: SizedBox(
-              width: 60,
-              height: 60,
-              child: Icon(icon, color: iconColor),
-            ),
-          ),
-        ),
-        const SizedBox(height: 5),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 11,
-            fontWeight: FontWeight.w700,
-            color: labelColor.withValues(alpha: 0.9),
-            letterSpacing: 0.5,
-          ),
-        ),
-      ],
     );
   }
 
