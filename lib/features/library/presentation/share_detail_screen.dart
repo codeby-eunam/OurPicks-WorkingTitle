@@ -76,7 +76,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
   @override
   Widget build(BuildContext context) {
     if (_loading || _redirected) {
-      return const Scaffold(
+      return Scaffold(
         body: Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
@@ -104,7 +104,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                 const SizedBox(height: 6),
                 Text(
                   t.shareNotViewableMessage,
-                  style: const TextStyle(color: AppColors.textSecondary),
+                  style: TextStyle(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -203,9 +203,9 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                               Container(
                                 width: 10,
                                 height: 10,
-                                decoration: const BoxDecoration(
+                                decoration: BoxDecoration(
                                   color: AppColors.secondary,
-                                  borderRadius: BorderRadius.all(
+                                  borderRadius: const BorderRadius.all(
                                     Radius.circular(2),
                                   ),
                                 ),
@@ -216,7 +216,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                                   list.ownerUserId ??
                                       t.libraryOwnerFallbackName,
                                 ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w600,
                                   color: AppColors.secondary,
@@ -235,7 +235,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                           ),
                           Text(
                             t.libraryDescriptionGeneric(list.places.length),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               color: AppColors.textSecondary,
                             ),
@@ -308,7 +308,7 @@ class _ShareDetailScreenState extends ConsumerState<ShareDetailScreen> {
                                             place.address,
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
+                                            style: TextStyle(
                                               fontSize: 11,
                                               color: AppColors.textSecondary,
                                             ),

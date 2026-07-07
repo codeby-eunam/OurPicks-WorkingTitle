@@ -61,7 +61,7 @@ class _MissingKakaoKeyNotice extends StatelessWidget {
       color: AppColors.surfaceMuted,
       alignment: Alignment.center,
       padding: const EdgeInsets.all(24),
-      child: const Text(
+      child: Text(
         'Kakao Maps JS 키가 설정되지 않았어요.\n'
         '--dart-define=KAKAO_JS_KEY=xxx 로 실행해주세요.\n'
         '(Kakao Developers 콘솔 → 앱 설정 → 플랫폼 → Web 등록)',

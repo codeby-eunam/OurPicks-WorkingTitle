@@ -129,7 +129,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   children: [
                     Text(
                       user.userId,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 16,
                         color: AppColors.textSecondary,
                       ),
@@ -143,7 +143,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         color: AppColors.surfaceMuted,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: const Text(
+                      child: Text(
                         '변경 불가',
                         style: TextStyle(
                           fontSize: 11,
@@ -155,8 +155,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ],
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(top: 6),
+              Padding(
+                padding: const EdgeInsets.only(top: 6),
                 child: Text(
                   '아이디는 고유 식별자로 변경이 어려워요',
                   style: TextStyle(
@@ -167,10 +167,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               ),
               const SizedBox(height: 28),
 
-              const Text.rich(
+              Text.rich(
                 TextSpan(
                   text: '닉네임',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                     color: Color(0xFF374151),
@@ -233,7 +233,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       children: [
                         Text(
                           nickname.isEmpty ? user.nickname : nickname,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 17,
                             fontWeight: FontWeight.w700,
                             color: AppColors.textPrimary,
@@ -241,7 +241,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         ),
                         Text(
                           user.userId,
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             color: AppColors.textSecondary,
                           ),

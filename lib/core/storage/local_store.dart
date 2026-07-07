@@ -10,6 +10,7 @@ class LocalStore {
   static const keyLastProvider = 'dangmatch_last_provider';
   static const keyHasSeenLanding = 'dangmatch_has_seen_landing';
   static const keyLocale = 'dangmatch_locale';
+  static const keyThemePalette = 'dangmatch_theme_palette';
   static const keyRecentLocationSearches = 'recentLocationSearches';
 
   SharedPreferences? _prefs;

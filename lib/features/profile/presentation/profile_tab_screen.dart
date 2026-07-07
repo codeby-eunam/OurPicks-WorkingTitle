@@ -75,7 +75,7 @@ class ProfileTabScreen extends ConsumerWidget {
                               ),
                               Text(
                                 user.userId,
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
                                 ),
@@ -173,7 +173,7 @@ class ProfileTabScreen extends ConsumerWidget {
         children: [
           Text(
             title.toUpperCase(),
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w700,
               color: AppColors.textSecondary,
@@ -242,7 +242,7 @@ class _StatItem extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 12,
               color: AppColors.textSecondary,
             ),

@@ -53,7 +53,7 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.textPrimary,
           textStyle: AppTypography.heading(15),
-          side: const BorderSide(
+          side: BorderSide(
             color: AppColors.border,
             width: AppRadius.hairline,
           ),
@@ -65,7 +65,7 @@ class AppTheme {
         color: AppColors.surface,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.lgAll,
-          side: const BorderSide(
+          side: BorderSide(
             color: AppColors.border,
             width: AppRadius.hairline,
           ),

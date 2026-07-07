@@ -52,7 +52,7 @@ class LibraryDetailScreen extends ConsumerWidget {
       // explore tab without visiting 내 보관함 first) — don't flash "not
       // found" while libraryProvider is still loading.
       if (libraryState.loading) {
-        return const Scaffold(
+        return Scaffold(
           body: Center(
             child: CircularProgressIndicator(color: AppColors.primary),
           ),
@@ -167,9 +167,9 @@ class LibraryDetailScreen extends ConsumerWidget {
                                   Container(
                                     width: 10,
                                     height: 10,
-                                    decoration: const BoxDecoration(
+                                    decoration: BoxDecoration(
                                       color: AppColors.secondary,
-                                      borderRadius: BorderRadius.all(
+                                      borderRadius: const BorderRadius.all(
                                         Radius.circular(2),
                                       ),
                                     ),
@@ -182,7 +182,7 @@ class LibraryDetailScreen extends ConsumerWidget {
                                             list.ownerUserId ??
                                                 t.libraryOwnerFallbackName,
                                           ),
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 13,
                                       fontWeight: FontWeight.w600,
                                       color: AppColors.secondary,
@@ -232,7 +232,7 @@ class LibraryDetailScreen extends ConsumerWidget {
                                     : t.libraryDescriptionGeneric(
                                         list.places.length,
                                       ),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 14,
                                   color: AppColors.textSecondary,
                                 ),
@@ -549,7 +549,7 @@ class _VisibilityBadge extends StatelessWidget {
         isPublic
             ? AppLocalizations.of(context)!.commonPublic
             : AppLocalizations.of(context)!.commonPrivate,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 11,
           fontWeight: FontWeight.w600,
           color: AppColors.textSecondary,
@@ -639,7 +639,7 @@ class _PlaceCard extends StatelessWidget {
                     place.address,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 11,
                       color: AppColors.textSecondary,
                     ),
@@ -731,12 +731,12 @@ class _AddPlaceCard extends StatelessWidget {
                 color: Color(0xFFE5E7EB),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.add, color: AppColors.textSecondary),
+              child: Icon(Icons.add, color: AppColors.textSecondary),
             ),
             const SizedBox(height: 10),
             Text(
               AppLocalizations.of(context)!.libraryAddPlaceLabel,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 color: AppColors.textSecondary,
               ),
@@ -813,7 +813,7 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
             ),
             Expanded(
               child: _searching
-                  ? const Center(
+                  ? Center(
                       child: CircularProgressIndicator(
                         color: AppColors.primary,
                       ),
@@ -825,7 +825,7 @@ class _LibrarySearchSheetState extends ConsumerState<_LibrarySearchSheet> {
                           (p) => !existingIds.contains(p.id),
                         ))
                           ListTile(
-                            leading: const Icon(
+                            leading: Icon(
                               Icons.restaurant,
                               color: AppColors.primary,
                             ),
@@ -861,7 +861,7 @@ class _BottomTabBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = AppLocalizations.of(context)!;
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
       ),

@@ -31,8 +31,11 @@
   "settingsThemeLabel": "Theme",
   "@settingsThemeLabel": {},
 
-  "settingsThemeValue": "Light (Coming soon)",
-  "@settingsThemeValue": {},
+  "chooseThemeTitle": "Choose a theme",
+  "@chooseThemeTitle": {},
+
+  "chooseThemeSubtitle": "Pick a color palette for the app",
+  "@chooseThemeSubtitle": {},
 
   "settingsClearCacheLabel": "Clear Cache",
   "@settingsClearCacheLabel": {},
@@ -44,5 +47,197 @@
   "@settingsLanguageLabel": {},
 
   "settingsAppVersionLabel": "App Version",
-  "@settingsAppVersionLabel": {}
+  "@settingsAppVersionLabel": {},
+
+  "commonCancel": "Cancel",
+  "@commonCancel": {},
+
+  "commonDelete": "Delete",
+  "@commonDelete": {},
+
+  "commonDone": "Done",
+  "@commonDone": {},
+
+  "commonAdd": "Add",
+  "@commonAdd": {},
+
+  "commonPublic": "Public",
+  "@commonPublic": {},
+
+  "commonPrivate": "Private",
+  "@commonPrivate": {},
+
+  "navHome": "Home",
+  "@navHome": {},
+
+  "navExplore": "Explore",
+  "@navExplore": {},
+
+  "navLibrary": "Library",
+  "@navLibrary": {},
+
+  "navProfile": "Profile",
+  "@navProfile": {},
+
+  "searchPlaceCount": "{count} places",
+  "@searchPlaceCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "funnelStageFirstPick": "1st Pick",
+  "@funnelStageFirstPick": {},
+
+  "funnelStageTodaysPick": "Today's Pick",
+  "@funnelStageTodaysPick": {},
+
+  "swipeChoiceCountBadge": "{count} people picked today",
+  "@swipeChoiceCountBadge": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "swipeTodaysPickBadge": "⭐ Today's Pick!",
+  "@swipeTodaysPickBadge": {},
+
+  "swipeCantStartTournament": "Can't start a tournament yet",
+  "@swipeCantStartTournament": {},
+
+  "swipeInstantWin": "🏆 Instant win! (1 pick)",
+  "@swipeInstantWin": {},
+
+  "swipeStartTournamentWithCount": "Start tournament now ({count})",
+  "@swipeStartTournamentWithCount": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "swipeSelectedListTitle": "Your picks",
+  "@swipeSelectedListTitle": {},
+
+  "swipeNoSelections": "No picks yet",
+  "@swipeNoSelections": {},
+
+  "swipeAddToLibraryButton": "🗂 Add to Library",
+  "@swipeAddToLibraryButton": {},
+
+  "swipeGoHomeButton": "Go to home screen",
+  "@swipeGoHomeButton": {},
+
+  "swipeAddToLibrarySheetTitle": "Add to Library",
+  "@swipeAddToLibrarySheetTitle": {},
+
+  "swipeAddToExisting": "Add to existing",
+  "@swipeAddToExisting": {},
+
+  "swipeCreateNewList": "Create new list",
+  "@swipeCreateNewList": {},
+
+  "swipeNoListsYet": "No lists yet",
+  "@swipeNoListsYet": {},
+
+  "swipeAddedToLibraryMessage": "Added to your library!",
+  "@swipeAddedToLibraryMessage": {},
+
+  "swipeNewListNameHint": "Enter a list name",
+  "@swipeNewListNameHint": {},
+
+  "swipeListCreatedMessage": "\"{name}\" list created!",
+  "@swipeListCreatedMessage": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "swipeCreateAndSaveButton": "Create list and save ({count})",
+  "@swipeCreateAndSaveButton": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "libraryDetailNotFound": "Couldn't find this list.",
+  "@libraryDetailNotFound": {},
+
+  "libraryShareButton": "Share",
+  "@libraryShareButton": {},
+
+  "libraryMyWishlist": "My Wishlist",
+  "@libraryMyWishlist": {},
+
+  "libraryOwnerWishlist": "{name}'s Wishlist",
+  "@libraryOwnerWishlist": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "libraryOwnerFallbackName": "Someone",
+  "@libraryOwnerFallbackName": {},
+
+  "libraryDescriptionMine": "My favorite picks ({count})",
+  "@libraryDescriptionMine": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "libraryDescriptionGeneric": "Favorite picks ({count})",
+  "@libraryDescriptionGeneric": {
+    "placeholders": {
+      "count": {"type": "int"}
+    }
+  },
+
+  "shareCheckOutMessage": "Check out \"{title}\" on Dangmatch!\n{url}",
+  "@shareCheckOutMessage": {
+    "placeholders": {
+      "title": {"type": "String"},
+      "url": {"type": "String"}
+    }
+  },
+
+  "libraryRenameTitle": "Rename",
+  "@libraryRenameTitle": {},
+
+  "libraryReorderTitle": "Reorder",
+  "@libraryReorderTitle": {},
+
+  "libraryDeleteTitle": "Delete list",
+  "@libraryDeleteTitle": {},
+
+  "libraryDeleteConfirm": "Delete \"{title}\"?",
+  "@libraryDeleteConfirm": {
+    "placeholders": {
+      "title": {"type": "String"}
+    }
+  },
+
+  "libraryReorderHint": "Press and hold the drag handle to reorder",
+  "@libraryReorderHint": {},
+
+  "libraryDeletePlaceTitle": "Delete place",
+  "@libraryDeletePlaceTitle": {},
+
+  "libraryDeletePlaceConfirm": "Remove \"{name}\" from this list?",
+  "@libraryDeletePlaceConfirm": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
+
+  "libraryAddPlaceLabel": "Add a new place",
+  "@libraryAddPlaceLabel": {},
+
+  "libraryDetailSearchHint": "Search by place name...",
+  "@libraryDetailSearchHint": {},
+
+  "shareNotViewableTitle": "This list isn't viewable",
+  "@shareNotViewableTitle": {},
+
+  "shareNotViewableMessage": "It's private or no longer exists",
+  "@shareNotViewableMessage": {}
 }

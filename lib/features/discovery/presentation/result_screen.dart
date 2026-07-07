@@ -175,7 +175,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                       child: const Text('다시하기'),
                     ),
                   ),
-                  const Text(
+                  Text(
                     '오늘의 우승!',
                     style: TextStyle(
                       fontSize: 14,
@@ -256,7 +256,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                               children: [
                                 Text(
                                   winCountBadge(_winCount),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w600,
@@ -280,7 +280,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                                             : '오늘 당신을 위한 최고의 선택입니다.'),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 13,
                                     color: AppColors.textSecondary,
                                     height: 1.4,
@@ -316,14 +316,14 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                                     TextSpan(
                                       text:
                                           '${_funnelStages.first.count}개 후보 → ',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         color: AppColors.textSecondary,
                                       ),
                                     ),
                                     TextSpan(
                                       text:
                                           '${_formatElapsed(_elapsed)} 만에 결정',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         color: AppColors.primary,
                                       ),
@@ -366,7 +366,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                         ),
                         TextButton(
                           onPressed: () => context.go('/'),
-                          child: const Text(
+                          child: Text(
                             '홈으로',
                             style: TextStyle(color: AppColors.textSecondary),
                           ),
@@ -385,7 +385,7 @@ class _ResultScreenState extends ConsumerState<ResultScreen> {
                 shouldLoop: false,
                 numberOfParticles: 40,
                 gravity: 0.25,
-                colors: const [
+                colors: [
                   Color(0xFFFF7F50),
                   Color(0xFFF4D125),
                   AppColors.gold,

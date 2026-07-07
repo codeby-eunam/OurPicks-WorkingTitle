@@ -56,7 +56,7 @@ class LibraryTabScreen extends ConsumerWidget {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          const Text(
+                          Text(
                             '당신만을 위한 맛있는 기록들',
                             style: TextStyle(
                               fontSize: 13,
@@ -68,9 +68,9 @@ class LibraryTabScreen extends ConsumerWidget {
                     ),
                   ),
                   if (libraryState.loading)
-                    const SliverToBoxAdapter(
+                    SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 48),
+                        padding: const EdgeInsets.symmetric(vertical: 48),
                         child: Center(
                           child: CircularProgressIndicator(
                             color: AppColors.primary,
@@ -79,14 +79,14 @@ class LibraryTabScreen extends ConsumerWidget {
                       ),
                     )
                   else if (libraryState.lists.isEmpty)
-                    const SliverToBoxAdapter(
+                    SliverToBoxAdapter(
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 48),
+                        padding: const EdgeInsets.symmetric(vertical: 48),
                         child: Column(
                           children: [
-                            Text('📂', style: TextStyle(fontSize: 52)),
-                            SizedBox(height: 8),
-                            Text(
+                            const Text('📂', style: TextStyle(fontSize: 52)),
+                            const SizedBox(height: 8),
+                            const Text(
                               '아직 리스트가 없어요',
                               style: TextStyle(
                                 fontSize: 18,
@@ -94,7 +94,7 @@ class LibraryTabScreen extends ConsumerWidget {
                                 color: Color(0xFF374151),
                               ),
                             ),
-                            SizedBox(height: 4),
+                            const SizedBox(height: 4),
                             Text(
                               '아래 버튼을 눌러\n첫 번째 리스트를 만들어보세요!',
                               textAlign: TextAlign.center,
@@ -210,7 +210,7 @@ class _LibraryCard extends ConsumerWidget {
                           const SizedBox(width: 4),
                           Text(
                             '가게 ${item.count}개',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               color: AppColors.textSecondary,
                             ),
@@ -417,7 +417,7 @@ class _NewListCard extends StatelessWidget {
             Container(
               width: 46,
               height: 46,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: AppColors.primary,
                 shape: BoxShape.circle,
               ),
@@ -429,7 +429,7 @@ class _NewListCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 10),
-            const Text(
+            Text(
               '새 리스트 만들기',
               style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
             ),
@@ -565,7 +565,7 @@ class _CreateListSheetState extends ConsumerState<_CreateListSheet> {
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             '#시험기간 #데이트 처럼 기억하기 쉬운 이름이 좋아요',
             style: TextStyle(fontSize: 13, color: AppColors.textSecondary),
           ),
@@ -625,7 +625,7 @@ class _CreateListSheetState extends ConsumerState<_CreateListSheet> {
                       ),
                       child: Text(
                         '${_selected.length}개 선택됨',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: AppColors.primary,
@@ -639,7 +639,7 @@ class _CreateListSheetState extends ConsumerState<_CreateListSheet> {
         ),
         Expanded(
           child: _searching
-              ? const Center(
+              ? Center(
                   child: CircularProgressIndicator(color: AppColors.primary),
                 )
               : ListView(
@@ -654,7 +654,7 @@ class _CreateListSheetState extends ConsumerState<_CreateListSheet> {
                             _searchController.text.trim().isNotEmpty
                                 ? '검색 결과가 없어요'
                                 : '가게 이름을 검색해보세요',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textSecondary,
                             ),
                           ),

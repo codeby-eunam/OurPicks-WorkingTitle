@@ -158,9 +158,9 @@ class _ModeSelectScreenState extends State<ModeSelectScreen> {
                 : Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CircularProgressIndicator(color: AppColors.primary),
+                      CircularProgressIndicator(color: AppColors.primary),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         '맛집을 찾고 있어요',
                         style: TextStyle(
                           fontSize: 20,

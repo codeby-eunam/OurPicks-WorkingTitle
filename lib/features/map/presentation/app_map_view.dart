@@ -79,7 +79,7 @@ Future<void> showRestaurantMarkerSheet(
           children: [
             Text(
               marker.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: AppColors.textPrimary,
@@ -89,14 +89,14 @@ Future<void> showRestaurantMarkerSheet(
               const SizedBox(height: 6),
               Text(
                 category,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: AppColors.textSecondary),
               ),
             ],
             if (address.isNotEmpty) ...[
               const SizedBox(height: 6),
               Text(
                 address,
-                style: const TextStyle(color: AppColors.textSecondary),
+                style: TextStyle(color: AppColors.textSecondary),
               ),
             ],
             const SizedBox(height: 16),

@@ -98,7 +98,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
             markers: markers,
           );
         },
-        loading: () => const Center(
+        loading: () => Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
         error: (err, _) => Center(child: Text('가게 정보를 불러오지 못했습니다: $err')),

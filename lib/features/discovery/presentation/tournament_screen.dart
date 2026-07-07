@@ -204,7 +204,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
                   bottom: BorderSide(color: AppColors.surfaceMuted),
@@ -234,8 +234,8 @@ class _TournamentScreenState extends State<TournamentScreen> {
               backgroundColor: const Color(0xFFE5E7EB),
               color: AppColors.primary,
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 14, 20, 12),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
               child: Text(
                 '세상에서 제일 힘든 선택이지? 하나만 골라.',
                 textAlign: TextAlign.center,
@@ -257,7 +257,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
                         color: const Color(0xFFF0F0F0),
                         child: activeUrl != null
                             ? KakaoWebView(uri: activeUrl)
-                            : const Center(
+                            : Center(
                                 child: Text(
                                   '👆 카드를 선택하면\n맛집 정보가 표시돼요',
                                   textAlign: TextAlign.center,
@@ -326,7 +326,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
               ),
             ),
             Container(
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(top: BorderSide(color: AppColors.surfaceMuted)),
               ),
