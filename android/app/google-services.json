@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "286638221915",
+    "project_id": "dangmatch-18049",
+    "storage_bucket": "dangmatch-18049.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:286638221915:android:f9d92ada22bd4b0ca52d7e",
+        "android_client_info": {
+          "package_name": "com.dangmatch.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDbEbs0RS3lYaimt6iHAUz9kQdVnXK8fAM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 
@@ -59,7 +60,11 @@ class UserNotifier extends Notifier<UserState> {
   }
 
   /// context/UserContext.tsx의 processOAuthParams 1:1 이식.
-  OAuthResult processOAuthParams(Map<String, String> params) {
+  ///
+  /// 백엔드가 함께 내려준 Firebase customToken으로 로그인해, 이후 API 요청이
+  /// 검증 가능한 `Authorization: Bearer idToken` 헤더를 실어 보낼 수 있게 한다
+  /// (ApiClient의 dio 인터셉터가 자동으로 첨부).
+  Future<OAuthResult> processOAuthParams(Map<String, String> params) async {
     final error = params['error'];
     if (error != null) {
       throw Exception('[백엔드] ${Uri.decodeComponent(error)}');
@@ -78,6 +83,11 @@ class UserNotifier extends Notifier<UserState> {
       socialId = params['googleId']!;
     } else {
       throw Exception('소셜 로그인 정보를 찾을 수 없습니다.');
+    }
+
+    final customToken = params['customToken'];
+    if (customToken != null) {
+      await FirebaseAuth.instance.signInWithCustomToken(customToken);
     }
 
     final isNewUser = params['isNewUser'] == 'true';
@@ -134,7 +144,7 @@ class UserNotifier extends Notifier<UserState> {
     }
 
     final params = Uri.parse(resultUrl).queryParameters;
-    final result = processOAuthParams(params);
+    final result = await processOAuthParams(params);
 
     state = state.copyWith(lastUsedProvider: provider);
     await LocalStore.instance.setString(

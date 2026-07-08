@@ -39,7 +39,9 @@ class _AuthCallbackScreenState extends ConsumerState<AuthCallbackScreen> {
         return;
       }
 
-      final result = ref.read(userProvider.notifier).processOAuthParams(params);
+      final result = await ref
+          .read(userProvider.notifier)
+          .processOAuthParams(params);
       if (!mounted) return;
       if (result.needsSetup) {
         context.replace(
